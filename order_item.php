@@ -13,7 +13,7 @@ $customer = $_GET['pelanggan'];
 $toko = $_GET['kios'];
 $diskon = $_GET['diskon'] ?? 0;
 $waktu_order = $GET['waktu_order'] ?? date('Y-m-d H:i:s');
-$set_menu = mysqli_query($conn, "SELECT id,nama FROM tb_menu where nama_toko = '$toko'");
+$set_menu = mysqli_query($conn, "SELECT id,nama FROM tb_menu WHERE nama_toko = '$toko' AND status = 1");
 $query2 = mysqli_query($conn, "select * from tb_kios");
 while ($record = mysqli_fetch_array($query)) {
     $result[] = $record;

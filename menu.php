@@ -1,7 +1,16 @@
 <?php
 include "Database/connect.php";
+$status_filter = isset($_POST['status_filter']) ? $_POST['status_filter'] : 'all';
+$where_status = "";
+if ($status_filter === '1' || $status_filter === '0') {
+    $status_val = (int) $status_filter;
+    $where_status = "WHERE tb_menu.status = $status_val";
+}
+
 $query = mysqli_query($conn, "select * from tb_menu
-LEFT JOIN tb_kategori_menu ON tb_kategori_menu.id_kategori = tb_menu.kategori");
+LEFT JOIN tb_kategori_menu ON tb_kategori_menu.id_kategori = tb_menu.kategori
+$where_status
+ORDER BY tb_menu.status DESC, tb_menu.nama ASC");
 $sel_kategori = mysqli_query($conn, "SELECT id_kategori,kategori_menu FROM tb_kategori_menu");
 $query2 = mysqli_query($conn, "select * from tb_kios");
 while ($record2 = mysqli_fetch_array($query2)) {
@@ -33,6 +42,21 @@ while ($record = mysqli_fetch_array($query)) {
                 } else {
                 }
                 ?>
+                <div class="col-12 mb-3">
+                    <form method="post" class="d-flex align-items-end gap-2">
+                        <div>
+                            <label for="status_filter" class="form-label mb-1">Filter Status</label>
+                            <select class="form-select" id="status_filter" name="status_filter">
+                                <option value="all" <?php echo ($status_filter === 'all') ? 'selected' : ''; ?>>Semua</option>
+                                <option value="1" <?php echo ($status_filter === '1') ? 'selected' : ''; ?>>Aktif</option>
+                                <option value="0" <?php echo ($status_filter === '0') ? 'selected' : ''; ?>>Nonaktif</option>
+                            </select>
+                        </div>
+                        <div>
+                            <button type="submit" class="btn btn-secondary">Terapkan</button>
+                        </div>
+                    </form>
+                </div>
 
                 <!-- Modal tambah menu -->
                 <div class="modal fade" id="ModalTambah" data-bs-backdrop="static" data-bs-keyboard="false"
@@ -469,6 +493,7 @@ while ($record = mysqli_fetch_array($query)) {
                                     <th scope="col">Kategori</th>
                                     <th scope="col">Harga</th>
                                     <th scope="col">Nama Toko</th>
+                                    <th scope="col">Status</th>
                                     <?php
                                     if ($_SESSION["level_kantin"] == 1) {
                                         ?>
@@ -498,6 +523,13 @@ while ($record = mysqli_fetch_array($query)) {
                                         <td><?php echo $row['kategori_menu'] ?></td>
                                         <td><?php echo $row['harga'] + $row['pajak'] ?></td>
                                         <td><?php echo $row['nama_toko'] ?></td>
+                                        <td>
+                                            <?php if ((int) ($row['status'] ?? 0) === 1) { ?>
+                                                <span class="badge bg-success">Aktif</span>
+                                            <?php } else { ?>
+                                                <span class="badge bg-secondary">Nonaktif</span>
+                                            <?php } ?>
+                                        </td>
                                         <?php
                                         if ($_SESSION["level_kantin"] == 1) {
                                             ?>
@@ -509,6 +541,15 @@ while ($record = mysqli_fetch_array($query)) {
                                                     <button class="btn btn-warning btn-sm me-2" data-bs-toggle="modal"
                                                         data-bs-target="#ModalEdit<?php echo $row['id'] ?>"> <i
                                                             class="bi bi-pencil-fill"></i></button>
+                                                    <form action="validate/validate_menu_toggle_status.php" method="post" class="me-2">
+                                                        <input type="hidden" name="id" value="<?php echo $row['id'] ?>">
+                                                        <input type="hidden" name="status" value="<?php echo (int) ($row['status'] ?? 0); ?>">
+                                                        <button type="submit" name="toggle_menu_status"
+                                                            class="btn btn-<?php echo ((int) ($row['status'] ?? 0) === 1) ? 'secondary' : 'success'; ?> btn-sm"
+                                                            onclick="return confirm('Ubah status menu ini?')">
+                                                            <?php echo ((int) ($row['status'] ?? 0) === 1) ? 'Nonaktifkan' : 'Aktifkan'; ?>
+                                                        </button>
+                                                    </form>
                                                     <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
                                                         data-bs-target="#ModalDelete<?php echo $row['id'] ?>"> <i
                                                             class="bi bi-trash-fill"></i></button>
