@@ -4,15 +4,17 @@ $status_filter = isset($_POST['status_filter']) ? $_POST['status_filter'] : 'all
 $where_status = "";
 if ($status_filter === '1' || $status_filter === '0') {
     $status_val = (int) $status_filter;
-    $where_status = "WHERE tb_menu.status = $status_val";
+    $where_status = "AND tb_menu.status = $status_val";
 }
 
-$query = mysqli_query($conn, "select * from tb_menu
+$query = mysqli_query($conn, "select tb_menu.*, tb_kategori_menu.kategori_menu, tb_kategori_menu.jenis_menu from tb_menu
 LEFT JOIN tb_kategori_menu ON tb_kategori_menu.id_kategori = tb_menu.kategori
+LEFT JOIN tb_kios ON tb_kios.nama = tb_menu.nama_toko
+WHERE tb_kios.status = 1
 $where_status
 ORDER BY tb_menu.status DESC, tb_menu.nama ASC");
 $sel_kategori = mysqli_query($conn, "SELECT id_kategori,kategori_menu FROM tb_kategori_menu");
-$query2 = mysqli_query($conn, "select * from tb_kios");
+$query2 = mysqli_query($conn, "select * from tb_kios WHERE status = 1");
 while ($record2 = mysqli_fetch_array($query2)) {
     $result2[] = $record2;
 }

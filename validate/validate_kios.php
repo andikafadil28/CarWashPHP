@@ -4,6 +4,7 @@ session_start();
 include("../Database/connect.php");
 $id = (isset($_POST["id"])) ? htmlentities($_POST["id"]) : "";
 $nama = (isset($_POST["nama"])) ? htmlentities($_POST["nama"]) : "";
+$status = (isset($_POST["status"])) ? (int) $_POST["status"] : 0;
 
 if (isset($_POST['input_kios_proses'])) {
         $select_query = mysqli_query($conn, "SELECT * FROM tb_kios WHERE nama = '$nama'");
@@ -11,7 +12,7 @@ if (isset($_POST['input_kios_proses'])) {
                 echo "<script>alert('ID sudah terdaftar'); window.location.href='../kios';</script>";
                 exit();
         } else {
-                $query = mysqli_query($conn, "INSERT INTO tb_kios (nama) VALUES ('$nama')");
+                $query = mysqli_query($conn, "INSERT INTO tb_kios (nama, status) VALUES ('$nama', '$status')");
                 if ($query) {
                         echo "<script>alert('Kios berhasil ditambahkan'); window.location.href='../kios';</script>";
                 } else {

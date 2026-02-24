@@ -42,9 +42,11 @@
                                                     <option selected hidden value="">Pilih Kios User</option>
                                                     <?php
                                                     foreach ($result2 as $row2) {
+                                                        if ($row2['status'] == 1) {
                                                     ?>
-                                                        <option value="<?php echo $row2['nama'] ?>"><?php echo $row2['nama'] ?></option>
+                                                            <option value="<?php echo $row2['nama'] ?>"><?php echo $row2['nama'] ?></option>
                                                     <?php
+                                                        }
                                                     }
                                                     ?>
                                                 </select>
@@ -124,9 +126,11 @@
                                                             <option selected hidden value="<?php echo $row['nama_kios'] ?>"><?php echo $row['nama_kios'] ?></option>
                                                             <?php
                                                             foreach ($result2 as $row2) {
+                                                                if ($row2['status'] == 1) {
                                                             ?>
-                                                                <option value="<?php echo $row2['nama'] ?>"><?php echo $row2['nama'] ?></option>
+                                                                    <option value="<?php echo $row2['nama'] ?>"><?php echo $row2['nama'] ?></option>
                                                             <?php
+                                                                }
                                                             }
                                                             ?>
                                                         </select>

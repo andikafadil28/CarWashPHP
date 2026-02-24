@@ -1,6 +1,6 @@
 <?php
 include "Database/connect.php";
-$query = mysqli_query($conn, "select * from tb_kios");
+$query = mysqli_query($conn, "select * from tb_kios ORDER BY status DESC, nama ASC");
 while ($record = mysqli_fetch_array($query)) {
     $result[] = $record;
 }
@@ -29,21 +29,30 @@ while ($record = mysqli_fetch_array($query)) {
                             </div>
                             <div class="modal-body">
                                 <form class="needs-validation" novalidate action="validate/validate_kios.php" method="post">
-                                    <div class="row">
-                                        <div class="col lg-12">
-                                            <div class="form-floating ">
-                                                <input type="text" class="form-control" id="floatingkios" placeholder="nama toko" name="nama" required>
-                                                <label for="floatingkios">Nama</label>
-                                                <div class="invalid-feedback">
-                                                    Nama tidak boleh kosong
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                        <button type="submit" class="btn btn-primary" name="input_kios_proses">Simpan</button>
+	                                    <div class="row">
+	                                        <div class="col lg-12">
+	                                            <div class="form-floating ">
+	                                                <input type="text" class="form-control" id="floatingkios" placeholder="nama toko" name="nama" required>
+	                                                <label for="floatingkios">Nama</label>
+	                                                <div class="invalid-feedback">
+	                                                    Nama tidak boleh kosong
+	                                                </div>
+	                                            </div>
+	                                        </div>
+	                                    </div>
+	                                    <div class="row mt-3">
+	                                        <div class="col lg-12">
+	                                            <div class="form-check">
+	                                                <input type="hidden" name="status" value="0">
+	                                                <input class="form-check-input" type="checkbox" id="statusTambahKios" name="status" value="1" checked>
+	                                                <label class="form-check-label" for="statusTambahKios">Aktif</label>
+	                                            </div>
+	                                        </div>
+	                                    </div>
+	                                    
+	                                    <div class="modal-footer">
+	                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+	                                        <button type="submit" class="btn btn-primary" name="input_kios_proses">Simpan</button>
                                     </div>
                                 </form>
                             </div>
@@ -65,19 +74,28 @@ while ($record = mysqli_fetch_array($query)) {
                                 <div class="modal-body">
                                     <form class="needs-validation" novalidate action="validate/validate_edit_kios.php" method="post">
                                         <input type="hidden" name="id" value="<?php echo $row['id'] ?>">
-                                        <div class="row">
-                                            <div class="col lg-6">
-                                                <div class="form-floating ">
-                                                    <input type="text" class="form-control" id="floatingInput" placeholder="Masukan nama" name="nama" value="<?php echo $row['nama'] ?>" required>
-                                                    <label for="floatingInput">nama</label>
-                                                </div>
-                                            </div>
-                                            
-                                        </div>
-                                        
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                            <button type="submit" class="btn btn-primary" name="input_kios_edit">Simpan Data</button>
+	                                        <div class="row">
+	                                            <div class="col lg-6">
+	                                                <div class="form-floating ">
+	                                                    <input type="text" class="form-control" id="floatingInput" placeholder="Masukan nama" name="nama" value="<?php echo $row['nama'] ?>" required>
+	                                                    <label for="floatingInput">nama</label>
+	                                                </div>
+	                                            </div>
+	                                            
+	                                        </div>
+	                                        <div class="row mt-3">
+	                                            <div class="col lg-12">
+	                                                <div class="form-check">
+	                                                    <input type="hidden" name="status" value="0">
+	                                                    <input class="form-check-input" type="checkbox" id="statusEditKios<?php echo $row['id'] ?>" name="status" value="1" <?php echo ((int) ($row['status'] ?? 1) === 1) ? 'checked' : ''; ?>>
+	                                                    <label class="form-check-label" for="statusEditKios<?php echo $row['id'] ?>">Aktif</label>
+	                                                </div>
+	                                            </div>
+	                                        </div>
+	                                        
+	                                        <div class="modal-footer">
+	                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+	                                            <button type="submit" class="btn btn-primary" name="input_kios_edit">Simpan Data</button>
                                         </div>
                                     </form>
                                 </div>
@@ -196,6 +214,7 @@ while ($record = mysqli_fetch_array($query)) {
                                     <th scope="col">nomor</th>
                                     <th scope="col">ID</th>
                                     <th scope="col">Nama</th>
+                                    <th scope="col">Status</th>
                                     <th scope="col">Aksi</th>
                                 </tr>
                             </thead>
@@ -208,11 +227,29 @@ while ($record = mysqli_fetch_array($query)) {
                                         <th scope="row"><?php echo $id_nomor++ ?></th>
                                         <td><?php echo $row['id'] ?></td>
                                         <td><?php echo $row['nama'] ?></td>
-                                        <td class="d-flex">
-                                            <button class="btn btn-info btn-sm me-2" data-bs-toggle="modal" data-bs-target="#ModalView<?php echo $row['id'] ?>"> <i class="bi bi-eye-fill"></i></button>
-                                            <button class="btn btn-warning btn-sm me-2" data-bs-toggle="modal" data-bs-target="#ModalEdit<?php echo $row['id'] ?>"> <i class="bi bi-pencil-fill"></i></button>
-                                            <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#ModalDelete<?php echo $row['id'] ?>"> <i class="bi bi-trash-fill"></i></button>
+                                        <td>
+                                            <?php if ((int) ($row['status'] ?? 0) === 1) { ?>
+                                                <span class="badge bg-success">Aktif</span>
+                                            <?php } else { ?>
+                                                <span class="badge bg-secondary">Nonaktif</span>
+                                            <?php } ?>
                                         </td>
+	                                        <td>
+	                                            <div class="d-flex align-items-center gap-2">
+	                                            <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#ModalView<?php echo $row['id'] ?>"> <i class="bi bi-eye-fill"></i></button>
+	                                            <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#ModalEdit<?php echo $row['id'] ?>"> <i class="bi bi-pencil-fill"></i></button>
+	                                            <form action="validate/validate_kios_toggle_status.php" method="post" class="m-0">
+	                                                <input type="hidden" name="id" value="<?php echo $row['id'] ?>">
+	                                                <input type="hidden" name="status" value="<?php echo (int) ($row['status'] ?? 0); ?>">
+	                                                <button type="submit" name="toggle_kios_status"
+                                                    class="btn btn-<?php echo ((int) ($row['status'] ?? 0) === 1) ? 'secondary' : 'success'; ?> btn-sm"
+                                                    onclick="return confirm('Ubah status kios ini?')">
+	                                                    <?php echo ((int) ($row['status'] ?? 0) === 1) ? 'Nonaktifkan' : 'Aktifkan'; ?>
+	                                                </button>
+	                                            </form>
+	                                            <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#ModalDelete<?php echo $row['id'] ?>"> <i class="bi bi-trash-fill"></i></button>
+	                                            </div>
+	                                        </td>
                                     </tr>
                                 <?php
                                 }

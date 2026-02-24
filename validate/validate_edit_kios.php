@@ -4,6 +4,7 @@ session_start();
 include("../Database/connect.php");
 $id = (isset($_POST["id"])) ? htmlentities($_POST["id"]) : "";
 $nama = (isset($_POST["nama"])) ? htmlentities($_POST["nama"]) : "";
+$status = (isset($_POST["status"])) ? (int) $_POST["status"] : 0;
 
 
 if (isset($_POST['input_kios_edit'])) {
@@ -12,7 +13,7 @@ if (isset($_POST['input_kios_edit'])) {
                 echo "<script>alert('Username sudah terdaftar'); window.location.href='../user';</script>";
                 exit();
         } else {
-                $query = mysqli_query($conn, "update tb_kios set nama = '$nama' where id = '$_POST[id]'");
+                $query = mysqli_query($conn, "update tb_kios set nama = '$nama', status = '$status' where id = '$_POST[id]'");
                 if ($query) {
                         echo "<script>alert('User berhasil Di Update'); window.location.href='../kios';</script>";
                 } else {
