@@ -22,11 +22,11 @@
                                                       <option value=""></option>
                                                       <?php
                                                       foreach ($set_menu as $value) {
-                                                            ?>
+                                                      ?>
                                                             <option value="<?php echo $value['id'] ?>">
                                                                   <?php echo $value['nama'] ?>
                                                             </option>
-                                                            <?php
+                                                      <?php
                                                       }
                                                       ?>
                                                 </select>
@@ -51,8 +51,8 @@
 
                               <!-- Pastikan jQuery dan Select2 CSS/JS sudah diload di layout (CDN atau lokal) -->
                               <script>
-                                    (function ($) {
-                                          $(function () {
+                                    (function($) {
+                                          $(function() {
                                                 function initMenuSelect($modal) {
                                                       var $sel = $modal.find('#menu-pilihan');
                                                       if ($sel.length && !$sel.hasClass('select2-initialized')) {
@@ -67,7 +67,7 @@
                                                 }
 
                                                 // Inisialisasi saat modal dibuka
-                                                $('#tambahItem').on('shown.bs.modal', function () {
+                                                $('#tambahItem').on('shown.bs.modal', function() {
                                                       initMenuSelect($(this));
                                                 });
 
@@ -97,6 +97,103 @@
             </div>
       </div>
 </div>
+<!-- Modal tambah addon -->
+<div class="modal fade" id="tambahAddon" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+      aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-fullscreen-md-down">
+            <div class="modal-content">
+                  <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Tambah Addon</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                        <form class="needs-validation" novalidate action="validate/validate_order_item.php"
+                              method="post">
+                              <input type="hidden" name="kode_order" value="<?php echo $kode ?>">
+                              <input type="hidden" name="meja" value="<?php echo $meja ?>">
+                              <input type="hidden" name="pelanggan" value="<?php echo $customer ?>">
+                              <input type="hidden" name="kios" value="<?php echo $toko ?>">
+                              <div class="row mt-3">
+                                    <div class="col-lg-6">
+                                          <div class="form-floating mb-3">
+                                                <select class="form-select select2" name="menu" id="menu-pilihan-addon"
+                                                      data-placeholder="Pilih Menu" style="width:100%">
+                                                      <option value=""></option>
+                                                      <?php
+                                                      foreach ($set_menu as $value) {
+                                                            if (isset($value['jenis_menu']) && (int) $value['jenis_menu'] === 3) {
+                                                      ?>
+                                                                  <option value="<?php echo $value['id'] ?>">
+                                                                        <?php echo $value['nama'] ?>
+                                                                  </option>
+                                                      <?php
+                                                            }
+                                                      }
+                                                      ?>
+                                                </select>
+
+                                          </div>
+                                    </div>
+                              </div>
+
+                              <div class="row mb-3">
+                                    <div class="col-lg-4">
+                                          <div class="form-floating">
+                                                <input type="number" class="form-control" id="floatingJumlahAddon"
+                                                      placeholder="Masukan Jumlah" name="jumlah" required>
+                                                <label for="floatingJumlahAddon">Jumlah Porsi</label>
+                                                <div class="invalid-feedback">
+                                                      Jumlah tidak boleh kosong
+                                                </div>
+                                          </div>
+                                    </div>
+                              </div>
+
+                              <script>
+                                    (function($) {
+                                          $(function() {
+                                                function initAddonSelect($modal) {
+                                                      var $sel = $modal.find('#menu-pilihan-addon');
+                                                      if ($sel.length && !$sel.hasClass('select2-initialized')) {
+                                                            $sel.select2({
+                                                                  placeholder: $sel.data('placeholder') || 'Pilih Menu',
+                                                                  allowClear: true,
+                                                                  width: '100%',
+                                                                  dropdownParent: $modal.find('.modal-content')
+                                                            });
+                                                            $sel.addClass('select2-initialized');
+                                                      }
+                                                }
+
+                                                $('#tambahAddon').on('shown.bs.modal', function() {
+                                                      initAddonSelect($(this));
+                                                });
+
+                                                initAddonSelect($('#tambahAddon'));
+                                          });
+                                    })(jQuery);
+                              </script>
+                              <div class="row mb-3">
+                                    <div class="col">
+                                          <div class="form-floating">
+                                                <input type="text" class="form-control" id="catatan_order_addon"
+                                                      placeholder="Masukan Keterangan" name="catatan_order">
+                                                <label for="catatan_order_addon">Catatan</label>
+                                          </div>
+                                    </div>
+                              </div>
+
+                              <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                          data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary"
+                                          name="input_order_item_proses">Simpan</button>
+                              </div>
+                        </form>
+                  </div>
+            </div>
+      </div>
+</div>
 <!-- Modal bayar -->
 
 <?php
@@ -104,7 +201,7 @@ if (empty($result)) {
       echo "<div class='alert alert-warning'>Data tidak ditemukan</div>";
 } else {
       foreach ($result as $row) {
-            ?>
+?>
             <!-- Modal edit -->
             <div class="modal fade" id="ModalEdit<?php echo $row['id_list_order'] ?>" tabindex="-1"
                   aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -134,8 +231,8 @@ if (empty($result)) {
                                                                         } else {
                                                                               echo "<option value='" . $value['id'] . "'>" . $value['nama'] . "</option>";
                                                                         }
-                                                                        ?>
-                                                                        <?php
+                                                                  ?>
+                                                                  <?php
                                                                   }
                                                                   ?>
                                                             </select>
@@ -212,7 +309,7 @@ if (empty($result)) {
 
 
 
-            <?php
+      <?php
       }
       ?>
       <!-- Modal bayar -->
@@ -240,15 +337,31 @@ if (empty($result)) {
                                                 <?php
 
                                                 foreach ($result as $row) {
-                                                      ?>
+                                                ?>
                                                       <tr>
                                                             <td><?php echo $row['nama'] ?></td>
-                                                            <td><?php echo number_format($row['harga_jual'], 0, ',', '.') ?></td>
+                                                            <td>
+                                                                  <?php
+                                                                  if (isset($row['jenis_menu']) && (int)$row['jenis_menu'] === 3) {
+                                                                        echo number_format(($row['harga'] + $row['pajak']), 0, ',', '.');
+                                                                  } else {
+                                                                        echo number_format($row['harga_jual'], 0, ',', '.');
+                                                                  }
+                                                                  ?>
+                                                            </td>
                                                             <td><?php echo $row['jumlah'] ?></td>
                                                             <td><?php echo $row['catatan_order'] ?></td>
-                                                            <td><?php echo number_format($row['harganya'], 0, ',', '.') ?></td>
+                                                            <td>
+                                                                  <?php
+                                                                  if (isset($row['jenis_menu']) && (int)$row['jenis_menu'] === 3) {
+                                                                        echo number_format($row['harganyanon'], 0, ',', '.');
+                                                                  } else {
+                                                                        echo number_format($row['harganya'], 0, ',', '.');
+                                                                  }
+                                                                  ?>
+                                                            </td>
                                                       </tr>
-                                                      <?php
+                                                <?php
                                                 }
                                                 ?>
                                                 <tr>
@@ -261,9 +374,13 @@ if (empty($result)) {
                                                             $total2 = 0;
                                                             $total3 = 0;
                                                             foreach ($result as $row) {
-                                                                  $total += $row['harganya'];
+                                                                  if (isset($row['jenis_menu']) && (int)$row['jenis_menu'] === 3) {
+                                                                        $total += $row['harganyanon'];
+                                                                  } else {
+                                                                        $total += $row['harganya'];
+                                                                        $total3 += $row['ppn_pajak'];
+                                                                  }
                                                                   $total2 += $row['harganya_toko'];
-                                                                  $total3 += $row['ppn_pajak'];
                                                             }
                                                             echo number_format($total, 0, ',', '.');
                                                             ?>
@@ -353,6 +470,6 @@ if (empty($result)) {
 
 
 
-      <?php
+<?php
 }
 ?>

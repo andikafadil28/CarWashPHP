@@ -9,11 +9,21 @@ $foto = (isset($_POST["foto"])) ? htmlentities($_POST["foto"]) : "";
 
 if (isset($_POST['input_menu_delete'])) {
       $query = mysqli_query($conn, "DELETE FROM tb_menu WHERE id = '$id'");
-      unlink("../assets/img/" . $foto); // Delete the image file from the server
-        if ($query) {
-                echo "<script>alert('Menu berhasil Di Hapus'); window.location.href='../menu';</script>";
-        } else {
-                echo "<script>alert('Gagal Menghapus menu'); window.location.href='../menu';</script>";
-        } 
+      if ($query) {
+            // Hapus file foto hanya jika memang ada.
+            $safeFoto = basename((string) $foto);
+            $pathFoto = "../assets/img/" . $safeFoto;
+            if (!empty($safeFoto) && file_exists($pathFoto)) {
+                  @unlink($pathFoto);
+            }
+            echo "<script>alert('Menu berhasil Di Hapus'); window.location.href='../menu';</script>";
+      } else {
+            $dbError = mysqli_error($conn);
+            if (stripos($dbError, 'foreign key') !== false) {
+                  echo "<script>alert('Menu tidak bisa dihapus karena masih dipakai pada data order.'); window.location.href='../menu';</script>";
+            } else {
+                  echo "<script>alert('Gagal Menghapus menu'); window.location.href='../menu';</script>";
+            }
+      }
 }   
 ?>

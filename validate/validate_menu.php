@@ -9,29 +9,31 @@ $harga = (isset($_POST["harga"])) ? htmlentities($_POST["harga"]) : "";
 $stok = (isset($_POST["stok"])) ? htmlentities($_POST["stok"]) : "";
 $kios = (isset($_POST["kios"])) ? htmlentities($_POST["kios"]) : "";
 $pajak = (isset($_POST["pajak"])) ? htmlentities($_POST["pajak"]) : "";
+$status = isset($_POST["status_aktif"]) ? 1 : 0;
 
 
 $kode_rand = rand(1000, 9999) . "-";
 $target_dir = "../assets/img/" . $kode_rand;
-$target_file = $target_dir . basename($_FILES["foto"]["name"]);
+$foto_name = isset($_FILES["foto"]["name"]) ? $_FILES["foto"]["name"] : "";
+$target_file = $target_dir . basename($foto_name);
 $imageType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
 
 
-echo $imageType;
-
 if (isset($_POST['input_menu_proses'])) {
-    // Validate gambar
-    $cek = getimagesize($_FILES["foto"]["tmp_name"]);
-    if ($cek === false) {
-        echo "<script>alert('File yang diupload bukan gambar'); window.location.href='../menu';
-}</script>";
-        $statusUpload = 0;
-    } else {
-        $statusUpload = 1;
-        if (file_exists($target_file)) {
-            echo "<script>alert('File sudah ada'); window.location.href='../menu';</script>";
+    $hasPhoto = isset($_FILES["foto"]["tmp_name"]) && is_uploaded_file($_FILES["foto"]["tmp_name"]);
+    $statusUpload = 1;
+    $namaFileFoto = "";
+
+    if ($hasPhoto) {
+        $cek = getimagesize($_FILES["foto"]["tmp_name"]);
+        if ($cek === false) {
+            echo "<script>alert('File yang diupload bukan gambar'); window.location.href='../menu';</script>";
+            $statusUpload = 0;
         } else {
-            if ($_FILES["foto"]["size"] > 500000) {
+            if (file_exists($target_file)) {
+                echo "<script>alert('File sudah ada'); window.location.href='../menu';</script>";
+                $statusUpload = 0;
+            } elseif ($_FILES["foto"]["size"] > 500000) {
                 echo "<script>alert('File terlalu besar'); window.location.href='../menu';</script>";
                 $statusUpload = 0;
             } elseif ($imageType != "jpg" && $imageType != "png" && $imageType != "jpeg" && $imageType != "gif") {
@@ -40,27 +42,31 @@ if (isset($_POST['input_menu_proses'])) {
             }
         }
     }
+
     if ($statusUpload == 0) {
-        echo "<script>alert('Gagal mengupload gambar'); window.location.href='../menu';</script>";
         exit();
-    } else {
-        $select_query = mysqli_query($conn, "SELECT * FROM tb_menu WHERE nama = '$nama_menu'");
-        if (mysqli_num_rows($select_query) > 0) {
-            echo "<script>alert('Menu sudah terdaftar'); window.location.href='../menu';</script>";
+    }
+
+    $select_query = mysqli_query($conn, "SELECT * FROM tb_menu WHERE nama = '$nama_menu'");
+    if (mysqli_num_rows($select_query) > 0) {
+        echo "<script>alert('Menu sudah terdaftar'); window.location.href='../menu';</script>";
+        exit();
+    }
+
+    if ($hasPhoto) {
+        if (!move_uploaded_file($_FILES["foto"]["tmp_name"], $target_file)) {
+            echo "<script>alert('Gagal mengupload gambar'); window.location.href='../menu';</script>";
             exit();
-        } else {
-            if (move_uploaded_file($_FILES["foto"]["tmp_name"], $target_file)) {
-                $query = mysqli_query($conn, "INSERT INTO tb_menu (nama, foto, keterangan , kategori , nama_toko , harga,pajak ) 
-                    VALUES ('$nama_menu', '" . $kode_rand . $_FILES['foto']['name'] . "', '$keterangan', '$kategori_menu', '$kios', '$harga','$pajak')");
-                if ($query) {
-                    echo "<script>alert('Menu berhasil ditambahkan'); window.location.href='../menu';</script>";
-                } else {
-                    echo "<script>alert('Gagal menambahkan menu'); window.location.href='../menu';</script>";
-                }
-            } else {
-                echo "<script>alert('Gagal mengupload gambar'); window.location.href='../menu';</script>";
-            }
         }
+        $namaFileFoto = $kode_rand . $_FILES['foto']['name'];
+    }
+
+    $query = mysqli_query($conn, "INSERT INTO tb_menu (nama, foto, keterangan , kategori , nama_toko , harga, pajak, status) 
+            VALUES ('$nama_menu', '$namaFileFoto', '$keterangan', '$kategori_menu', '$kios', '$harga', '$pajak', '$status')");
+    if ($query) {
+        echo "<script>alert('Menu berhasil ditambahkan'); window.location.href='../menu';</script>";
+    } else {
+        echo "<script>alert('Gagal menambahkan menu'); window.location.href='../menu';</script>";
     }
 
     exit();

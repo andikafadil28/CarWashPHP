@@ -77,13 +77,11 @@ while ($record = mysqli_fetch_array($query)) {
                                         <div class="col lg-12">
                                             <div class="input-group">
                                                 <input type="file" class="form-control py-9" id="floatingInputGambar"
-                                                    placeholder="Masukan Gambar" name="foto" required>
+                                                    placeholder="Masukan Gambar" name="foto">
                                                 <label class="input-group-text" for="floatingInputGambar">Upload Foto
                                                     Menu</label>
-                                                <div class="invalid-feedback">
-                                                    Gambar tidak boleh kosong
-                                                </div>
                                             </div>
+                                            <small class="text-muted">Foto opsional, boleh dikosongkan.</small>
                                         </div>
                                     </div>
                                     <div class="row mt-3">
@@ -170,6 +168,17 @@ while ($record = mysqli_fetch_array($query)) {
                                                 <div class="invalid-feedback">
                                                     Kios tidak boleh kosong
                                                 </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="1"
+                                                    id="status_aktif" name="status_aktif" checked>
+                                                <label class="form-check-label" for="status_aktif">
+                                                    Aktifkan menu
+                                                </label>
                                             </div>
                                         </div>
                                     </div>
@@ -306,6 +315,19 @@ while ($record = mysqli_fetch_array($query)) {
                                                     <div class="invalid-feedback">
                                                         Kios tidak boleh kosong
                                                     </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-3">
+                                            <div class="col">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="1"
+                                                        id="status_aktif_edit_<?php echo $row['id']; ?>" name="status_aktif"
+                                                        <?php echo ((int) ($row['status'] ?? 0) === 1) ? 'checked' : ''; ?>>
+                                                    <label class="form-check-label"
+                                                        for="status_aktif_edit_<?php echo $row['id']; ?>">
+                                                        Aktifkan menu
+                                                    </label>
                                                 </div>
                                             </div>
                                         </div>
@@ -515,8 +537,12 @@ while ($record = mysqli_fetch_array($query)) {
                                         <th scope="row"><?php echo $id_nomor++ ?></th>
                                         <td>
                                             <div style="width: 100px;">
-                                                <img src="assets/img/<?php echo $row['foto'] ?>" class="img-thumbnail"
-                                                    alt="...">
+                                                <?php if (!empty($row['foto'])) { ?>
+                                                    <img src="assets/img/<?php echo $row['foto'] ?>" class="img-thumbnail"
+                                                        alt="<?php echo htmlspecialchars($row['nama']); ?>">
+                                                <?php } else { ?>
+                                                    <span class="badge bg-light text-dark border">Tanpa Foto</span>
+                                                <?php } ?>
                                             </div>
                                         </td>
                                         <td><?php echo $row['nama'] ?></td>
