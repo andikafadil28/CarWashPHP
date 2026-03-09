@@ -30,6 +30,13 @@ a:hover {
 
 .sidebar {
   background-color: var(--kantin-primary);
+  position: relative;
+  z-index: 1100;
+}
+
+.sidebar .nav-item .collapse,
+.sidebar .nav-item .collapsing {
+  z-index: 1110;
 }
 
 .sidebar .nav-item .collapse .collapse-inner .collapse-item.active,
