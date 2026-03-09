@@ -110,6 +110,11 @@ $menuPopulerMingguIni = !empty($menu_mingguan[0]) ? $menu_mingguan[0] : "Belum a
         background: linear-gradient(180deg, #ffffff 0%, #fbfaf6 100%);
     }
 
+    .home-chart-wrap {
+        position: relative;
+        height: 320px;
+    }
+
     .home-feature-card {
         height: 100%;
         background: #fff;
@@ -259,7 +264,9 @@ $menuPopulerMingguIni = !empty($menu_mingguan[0]) ? $menu_mingguan[0] : "Belum a
                         </div>
                         <span class="badge rounded-pill text-bg-info text-white px-3 py-2">Update hari ini</span>
                     </div>
-                    <canvas id="menuTerlarisChart" height="130"></canvas>
+                    <div class="home-chart-wrap">
+                        <canvas id="menuTerlarisChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
@@ -273,7 +280,9 @@ $menuPopulerMingguIni = !empty($menu_mingguan[0]) ? $menu_mingguan[0] : "Belum a
                         </div>
                         <span class="badge rounded-pill text-bg-info text-white px-3 py-2">Update 7 hari</span>
                     </div>
-                    <canvas id="menuTerlarisMingguanChart" height="130"></canvas>
+                    <div class="home-chart-wrap">
+                        <canvas id="menuTerlarisMingguanChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
