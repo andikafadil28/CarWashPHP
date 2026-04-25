@@ -19,7 +19,7 @@ $where_parts = [];
 $filter_info = "SEMUA WAKTU"; // Default info
 
 // **Daftar Menu yang Diinginkan**
-$target_menus = ['Es Teh', 'Es Jeruk', 'Es Milo', 'Es Susu', 'Es Coffe Mix','Air Putih','Nutrisari','Es Good Day'];
+$target_menus = ['Es Teh', 'Es Jeruk', 'Es Milo', 'Es Susu', 'Es Coffe Mix', 'Air Putih', 'Nutrisari', 'Es Good Day', 'Chocolatos', 'Dancow', 'Kopi Hitam'];
 // Membuat klausa SQL untuk memfilter menu target (WAJIB)
 $menu_filter_sql = "tb_menu.nama IN ('" . implode("', '", array_map('mysqli_real_escape_string', array_fill(0, count($target_menus), $conn), $target_menus)) . "')";
 $where_parts[] = $menu_filter_sql;
@@ -62,7 +62,7 @@ $sql = "SELECT
         LEFT JOIN tb_bayar ON tb_bayar.id_bayar = tb_list_order.kode_order
         $where_clause 
         GROUP BY tb_menu.nama, tb_menu.harga 
-        ORDER BY Total_Terjual DESC"; 
+        ORDER BY Total_Terjual DESC";
 
 $result = $conn->query($sql);
 if (!$result) {
@@ -70,7 +70,7 @@ if (!$result) {
 }
 
 $data = [];
-$grand_total_jual = 0; 
+$grand_total_jual = 0;
 while ($row = $result->fetch_assoc()) {
     $grand_total_jual += $row['Total_harga'];
     $data[] = $row;
@@ -99,19 +99,19 @@ $sheet->getStyle('A2')->getFont()->setSize(12)->setBold(true);
 $sheet->getStyle('A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
 // Tentukan baris awal untuk Header Tabel
-$header_row = 3; 
+$header_row = 3;
 $data_start_row = 4;
 
 // 2. HEADER TABEL (Baris 3)
 $headerStyle = [
     'font' => [
         'bold' => true,
-        'color' => ['rgb' => 'FFFFFF'], 
+        'color' => ['rgb' => 'FFFFFF'],
         'size' => 11,
     ],
     'fill' => [
         'fillType' => Fill::FILL_SOLID,
-        'startColor' => ['rgb' => '0070C0'], 
+        'startColor' => ['rgb' => '0070C0'],
     ],
     'alignment' => [
         'horizontal' => Alignment::HORIZONTAL_CENTER,
@@ -130,9 +130,9 @@ $sheet->getStyle('A' . $header_row . ':' . $last_col . $header_row)->applyFromAr
 $sheet->setCellValue('A' . $header_row, 'No');
 $sheet->setCellValue('B' . $header_row, 'Nama Menu');
 // Kolom C sekarang Total Item Terjual
-$sheet->setCellValue('C' . $header_row, 'Total Item Terjual'); 
+$sheet->setCellValue('C' . $header_row, 'Total Item Terjual');
 $sheet->setCellValue('D' . $header_row, 'Harga Satuan');
-$sheet->setCellValue('E' . $header_row, 'Total Harga Jual'); 
+$sheet->setCellValue('E' . $header_row, 'Total Harga Jual');
 
 // 3. DATA ROWS (Mulai Baris 4)
 $rowNum = $data_start_row;
@@ -156,10 +156,10 @@ foreach ($data as $row) {
     $sheet->setCellValue('A' . $rowNum, $id_nomor++);
     $sheet->setCellValue('B' . $rowNum, $row['nama']);
     // Kolom C (Nama Toko) dihapus
-    $sheet->setCellValue('C' . $rowNum, $row['Total_Terjual']); 
+    $sheet->setCellValue('C' . $rowNum, $row['Total_Terjual']);
     $sheet->setCellValue('D' . $rowNum, $row['harga_satuan']);
-    $sheet->setCellValue('E' . $rowNum, $row['Total_harga']); 
-    
+    $sheet->setCellValue('E' . $rowNum, $row['Total_harga']);
+
     // Terapkan border dan alignment untuk baris data
     $sheet->getStyle('A' . $rowNum . ':' . $last_col . $rowNum)->applyFromArray($dataStyle);
 
@@ -181,7 +181,7 @@ $totalRowStyle = [
     ],
     'fill' => [
         'fillType' => Fill::FILL_SOLID,
-        'startColor' => ['rgb' => 'FFF2CC'], 
+        'startColor' => ['rgb' => 'FFF2CC'],
     ],
     'borders' => [
         'top' => ['borderStyle' => Border::BORDER_THICK],
@@ -197,7 +197,7 @@ $sheet->getStyle('A' . $rowNum)->getAlignment()->setHorizontal(Alignment::HORIZO
 
 // Nilai Grand Total
 $sheet->setCellValue('E' . $rowNum, $grand_total_jual); // Sekarang di kolom E
-$sheet->getStyle('E' . $rowNum)->getNumberFormat()->setFormatCode('"Rp "#,##0'); 
+$sheet->getStyle('E' . $rowNum)->getNumberFormat()->setFormatCode('"Rp "#,##0');
 
 // 5. Set Lebar Kolom Otomatis
 foreach (range('A', $last_col) as $col) {
@@ -206,7 +206,7 @@ foreach (range('A', $last_col) as $col) {
 
 
 // --- NAMA FILE DINAMIS ---
-$tanggal_hari_ini = date('Y-m-d'); 
+$tanggal_hari_ini = date('Y-m-d');
 $filename = "laporan-penjualan-minuman-pilihan-" . $tanggal_hari_ini . ".xlsx";
 
 

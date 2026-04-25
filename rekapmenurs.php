@@ -8,7 +8,7 @@ $start_date = "";
 $end_date = "";
 
 // **Daftar Menu yang Diinginkan**
-$target_menus = ['Es Teh', 'Es Jeruk', 'Es Milo', 'Es Susu', 'Es Coffe Mix','Air Putih','Nutrisari','Es Good Day'];
+$target_menus = ['Es Teh', 'Es Jeruk', 'Es Milo', 'Es Susu', 'Es Coffe Mix', 'Air Putih', 'Nutrisari', 'Es Good Day', 'Chocolatos', 'Dancow', 'Kopi Hitam'];
 // Membuat klausa SQL untuk memfilter menu target
 $menu_filter_sql = "tb_menu.nama IN ('" . implode("', '", array_map('mysqli_real_escape_string', array_fill(0, count($target_menus), $conn), $target_menus)) . "')";
 
@@ -17,13 +17,13 @@ if (isset($_POST['filter'])) {
     // Ambil input dari form dan lakukan sanitasi
     $start_date = mysqli_real_escape_string($conn, $_POST['start_date']);
     $end_date = mysqli_real_escape_string($conn, $_POST['end_date']);
-    
+
     // Tentukan klausa WHERE berdasarkan filter
     $where_parts = [];
-    
+
     // 1. Filter Menu (Klausa wajib)
     $where_parts[] = $menu_filter_sql;
-    
+
     // 2. Filter Tanggal
     if (!empty($start_date) && !empty($end_date)) {
         $start_date_with_time = $start_date . " 00:00:00";
@@ -36,11 +36,11 @@ if (isset($_POST['filter'])) {
         $end_date_with_time = $end_date . " 23:59:59";
         $where_parts[] = "tb_order.waktu_order <= '$end_date_with_time'";
     }
-    
+
     if (!empty($where_parts)) {
         $where_clause = " WHERE " . implode(" AND ", $where_parts);
     }
-    
+
     // Query untuk semua filter
     $query_string = "SELECT 
                         tb_menu.nama, 
@@ -97,11 +97,13 @@ while ($record = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
                     <div class="row g-3 mb-3">
                         <div class="col-md-4">
                             <label for="start_date" class="form-label">Tanggal Mulai</label>
-                            <input type="date" class="form-control" name="start_date" value="<?php echo htmlspecialchars($start_date); ?>">
+                            <input type="date" class="form-control" name="start_date"
+                                value="<?php echo htmlspecialchars($start_date); ?>">
                         </div>
                         <div class="col-md-4">
                             <label for="end_date" class="form-label">Tanggal Selesai</label>
-                            <input type="date" class="form-control" name="end_date" value="<?php echo htmlspecialchars($end_date); ?>">
+                            <input type="date" class="form-control" name="end_date"
+                                value="<?php echo htmlspecialchars($end_date); ?>">
                         </div>
                         <div class="col-md-4 d-flex align-items-end">
                             <button type="submit" class="btn btn-primary" name="filter" value="filter">Filter</button>
@@ -116,10 +118,10 @@ while ($record = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
                     <?php
                     // Daftar menu yang difilter untuk ditampilkan di info
                     $menu_list = implode(", ", $target_menus);
-                    
+
                     if (isset($_POST['filter'])) {
                         $info_filter = "Menampilkan data laporan untuk menu **$menu_list**";
-                        
+
                         $tanggal_info = [];
                         if (!empty($start_date)) {
                             $tanggal_info[] = "dari **" . htmlspecialchars($start_date) . "**";
@@ -127,19 +129,19 @@ while ($record = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
                         if (!empty($end_date)) {
                             $tanggal_info[] = "sampai **" . htmlspecialchars($end_date) . "**";
                         }
-                        
+
                         if (!empty($tanggal_info)) {
                             $info_filter .= " " . implode(" ", $tanggal_info);
                         } else {
                             $info_filter .= " untuk **Semua Waktu**";
                         }
-                        
+
                         echo "<p class='alert alert-info'>$info_filter</p>";
                     } else {
                         echo "<p class='alert alert-info'>Menampilkan data laporan untuk menu **$menu_list** (Semua Waktu).</p>";
                     }
                     ?>
-                    
+
                     <table class="table table-hover" id="table_laporan">
                         <thead>
                             <tr>
@@ -157,7 +159,7 @@ while ($record = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
                             foreach ($result as $row) {
                                 $total_harga_menu = $row['Total_harga'] ?? 0;
                                 $grand_total += $total_harga_menu;
-                            ?>
+                                ?>
                                 <tr>
                                     <th scope="row"><?php echo $id_nomor++ ?></th>
                                     <td><?php echo htmlspecialchars($row['nama'] ?? '') ?></td>
@@ -165,10 +167,10 @@ while ($record = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
                                     <td><?php echo number_format($row['harga_satuan'] ?? 0, 0, ',', '.') ?></td>
                                     <td><?php echo number_format($total_harga_menu, 0, ',', '.') ?></td>
                                 </tr>
-                            <?php
+                                <?php
                             }
                             ?>
-                            
+
                         </tbody>
                     </table>
                     <div class="mb-3">
