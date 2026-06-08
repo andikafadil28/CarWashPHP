@@ -4,10 +4,10 @@ $query = mysqli_query($conn, "select * from user");
 while ($record = mysqli_fetch_array($query)) {
     $result[] = $record;
 }
-$query2 = mysqli_query($conn, "select * from tb_kios");
-while ($record2 = mysqli_fetch_array($query2)) {
-    $result2[] = $record2;
-}
+// $query2 = mysqli_query($conn, "select * from tb_kios");
+// while ($record2 = mysqli_fetch_array($query2)) {
+//     $result2[] = $record2;
+// }
 ?>
 
 <!-- Conten -->
@@ -59,7 +59,7 @@ while ($record2 = mysqli_fetch_array($query2)) {
                                                     <option selected hidden>Pilih Level User</option>
                                                     <option value="1">Admin</option>
                                                     <option value="2">Kasir</option>
-                                                    <option value="3">Pemilik Kios</option>
+                                                    <!-- <option value="3">Pemilik Kios</option> -->
                                                 </select>
                                                 <label for="floatinglevel">Level User</label>
                                                 <div class="invalid-feedback">
@@ -67,7 +67,7 @@ while ($record2 = mysqli_fetch_array($query2)) {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col lg-6">
+                                        <!-- <div class="col lg-6">
                                             <div class="form-floating ">
                                                 <select class="form-select" aria-label="Default select example" name="kios" required>
                                                     <option selected>Pilih Kios User</option>
@@ -84,7 +84,7 @@ while ($record2 = mysqli_fetch_array($query2)) {
                                                     Kios tidak boleh kosong
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> -->
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -290,7 +290,7 @@ while ($record2 = mysqli_fetch_array($query2)) {
                                     <th scope="col">Nama</th>
                                     <th scope="col">Password</th>
                                     <th scope="col">Level User</th>
-                                    <th scope="col">Kios</th>
+                                    <th scope="col">Role</th>
                                     <?php
                                     if ($_SESSION["level_kantin"] == 1) {
                                     ?>
@@ -322,7 +322,7 @@ while ($record2 = mysqli_fetch_array($query2)) {
                                                 echo "Unknown";
                                             }
                                             ?></td>
-                                        <td><?php echo $row['Kios'] ?></td>
+                                        <td><?php echo $row['role'] ?></td>
                                         <?php
                                         if ($_SESSION["level_kantin"] == 1) {
                                         ?>
@@ -360,7 +360,7 @@ while ($record2 = mysqli_fetch_array($query2)) {
     </div>
 </div>
 <!-- End of Conten -->
- <!-- <script> 
+<!-- <script> 
  Toastify({
   text: "This is a toast",
   className: "info",
@@ -393,7 +393,6 @@ while ($record2 = mysqli_fetch_array($query2)) {
 
 <script>
     let table = new DataTable('#table_user');
-
 </script>
 
 <style>

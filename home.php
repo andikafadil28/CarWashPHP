@@ -1,11 +1,12 @@
 <?php
-include "Database/connect.php";
-include "Database/Query/menu_telaris.php";
-
-$totalHarian = array_sum($total ?? []);
-$totalMingguan = array_sum($total_mingguan ?? []);
-$menuPopulerHariIni = !empty($menu[0]) ? $menu[0] : "Belum ada data";
-$menuPopulerMingguIni = !empty($menu_mingguan[0]) ? $menu_mingguan[0] : "Belum ada data";
+$totalHarian = 0;
+$totalMingguan = 0;
+$menuPopulerHariIni = "Belum ada data";
+$menuPopulerMingguIni = "Belum ada data";
+$labels = [];
+$dataValues = [];
+$labelsMingguan = [];
+$dataValuesMingguan = [];
 ?>
 
 <style>
@@ -157,18 +158,18 @@ $menuPopulerMingguIni = !empty($menu_mingguan[0]) ? $menu_mingguan[0] : "Belum a
             <div class="col-lg-7 home-hero-content">
                 <span class="home-kicker mb-3">
                     <i class="bi bi-stars"></i>
-                    Dashboard Kantin
+                    Dashboard Carwash
                 </span>
-                <h1 class="home-title fw-bold mb-3">Tampilan home yang lebih rapi, ringan, dan enak dilihat.</h1>
+                <h1 class="home-title fw-bold mb-3">Dashboard carwash yang clean, modern, dan siap dipakai.</h1>
                 <p class="home-subtitle mb-4">
-                    Pantau menu favorit dan mulai transaksi lebih cepat dari halaman utama Sakina Kantin.
+                    Pantau antrian cuci, transaksi, dan performa operasional dari satu halaman utama.
                 </p>
                 <div class="d-flex flex-wrap gap-3">
                     <a href="order" class="btn btn-warning btn-lg px-4 text-dark fw-bold shadow-sm">
-                        <i class="bi bi-basket2-fill me-2"></i>Mulai Order
+                        <i class="bi bi-car-front-fill me-2"></i>Mulai Transaksi
                     </a>
                     <a href="menu" class="btn btn-outline-light btn-lg px-4">
-                        <i class="bi bi-grid me-2"></i>Lihat Menu
+                        <i class="bi bi-droplet-half me-2"></i>Lihat Layanan
                     </a>
                 </div>
             </div>
@@ -178,25 +179,25 @@ $menuPopulerMingguIni = !empty($menu_mingguan[0]) ? $menu_mingguan[0] : "Belum a
                         <div>
                             <p class="text-uppercase small mb-2 text-white-50">Highlight Hari Ini</p>
                             <h4 class="fw-bold mb-1"><?= htmlspecialchars($menuPopulerHariIni) ?></h4>
-                            <p class="mb-0 text-white-50">Menu paling banyak dipesan hari ini.</p>
+                            <p class="mb-0 text-white-50">Ringkasan operasional harian akan tampil otomatis saat data aktif.</p>
                         </div>
                         <span class="badge rounded-pill text-bg-light text-dark px-3 py-2">
-                            <i class="bi bi-fire me-1"></i>Favorit
+                            <i class="bi bi-stars me-1"></i>Highlight
                         </span>
                     </div>
                     <div class="row g-3">
                         <div class="col-sm-6">
                             <div class="p-3 rounded-4 bg-white text-dark h-100">
-                                <div class="small text-muted mb-1">Total penjualan hari ini</div>
+                                <div class="small text-muted mb-1">Total kendaraan hari ini</div>
                                 <div class="fs-3 fw-bold"><?= number_format($totalHarian) ?></div>
-                                <div class="small text-muted">porsi terjual</div>
+                                <div class="small text-muted">kendaraan selesai dicuci</div>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="p-3 rounded-4 bg-dark bg-opacity-25 text-white h-100 border border-light border-opacity-10">
-                                <div class="small text-white-50 mb-1">Menu favorit minggu ini</div>
+                                <div class="small text-white-50 mb-1">Performa minggu ini</div>
                                 <div class="fw-bold"><?= htmlspecialchars($menuPopulerMingguIni) ?></div>
-                                <div class="small text-white-50 mt-2"><?= number_format($totalMingguan) ?> porsi minggu ini</div>
+                                <div class="small text-white-50 mt-2"><?= number_format($totalMingguan) ?> kendaraan minggu ini</div>
                             </div>
                         </div>
                     </div>
@@ -211,13 +212,13 @@ $menuPopulerMingguIni = !empty($menu_mingguan[0]) ? $menu_mingguan[0] : "Belum a
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <div class="home-stat-icon" style="background:#eef7f1;color:#1f7a4d;">
-                            <i class="bi bi-bar-chart-line-fill"></i>
+                            <i class="bi bi-car-front-fill"></i>
                         </div>
                         <span class="badge text-bg-success-subtle text-success">Hari ini</span>
                     </div>
-                    <div class="text-muted small mb-2">Penjualan hari ini</div>
+                    <div class="text-muted small mb-2">Kendaraan masuk hari ini</div>
                     <div class="h2 fw-bold mb-1"><?= number_format($totalHarian) ?></div>
-                    <div class="text-muted">Porsi yang sudah terjual.</div>
+                    <div class="text-muted">Jumlah unit yang sudah diproses hari ini.</div>
                 </div>
             </div>
         </div>
@@ -226,13 +227,13 @@ $menuPopulerMingguIni = !empty($menu_mingguan[0]) ? $menu_mingguan[0] : "Belum a
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <div class="home-stat-icon" style="background:#fff3e8;color:#d97706;">
-                            <i class="bi bi-cup-hot-fill"></i>
+                            <i class="bi bi-droplet-fill"></i>
                         </div>
-                        <span class="badge text-bg-warning-subtle text-warning-emphasis">Top menu</span>
+                        <span class="badge text-bg-warning-subtle text-warning-emphasis">Top service</span>
                     </div>
-                    <div class="text-muted small mb-2">Menu terlaris hari ini</div>
+                    <div class="text-muted small mb-2">Layanan unggulan</div>
                     <div class="h4 fw-bold mb-1"><?= htmlspecialchars($menuPopulerHariIni) ?></div>
-                    <div class="text-muted">Cocok buat pantauan cepat dari dashboard.</div>
+                    <div class="text-muted">Layanan yang paling sering dipakai pelanggan.</div>
                 </div>
             </div>
         </div>
@@ -241,13 +242,13 @@ $menuPopulerMingguIni = !empty($menu_mingguan[0]) ? $menu_mingguan[0] : "Belum a
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <div class="home-stat-icon" style="background:#eef2ff;color:#4f46e5;">
-                            <i class="bi bi-calendar-week-fill"></i>
+                            <i class="bi bi-cash-coin"></i>
                         </div>
                         <span class="badge text-bg-primary-subtle text-primary">7 hari</span>
                     </div>
-                    <div class="text-muted small mb-2">Akumulasi minggu ini</div>
+                    <div class="text-muted small mb-2">Pendapatan minggu ini</div>
                     <div class="h2 fw-bold mb-1"><?= number_format($totalMingguan) ?></div>
-                    <div class="text-muted">Total porsi dari menu terlaris mingguan.</div>
+                    <div class="text-muted">Akumulasi pemasukan mingguan akan tampil di sini.</div>
                 </div>
             </div>
         </div>
@@ -260,7 +261,7 @@ $menuPopulerMingguIni = !empty($menu_mingguan[0]) ? $menu_mingguan[0] : "Belum a
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <div>
                             <div class="small text-uppercase text-muted mb-1">Grafik Harian</div>
-                            <h5 class="fw-bold mb-0">Menu Terlaris Hari Ini</h5>
+                            <h5 class="fw-bold mb-0">Aktivitas Harian</h5>
                         </div>
                         <span class="badge rounded-pill text-bg-info text-white px-3 py-2">Update hari ini</span>
                     </div>
@@ -276,7 +277,7 @@ $menuPopulerMingguIni = !empty($menu_mingguan[0]) ? $menu_mingguan[0] : "Belum a
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <div>
                             <div class="small text-uppercase text-muted mb-1">Grafik Mingguan</div>
-                            <h5 class="fw-bold mb-0">Menu Terlaris Minggu Ini</h5>
+                            <h5 class="fw-bold mb-0">Aktivitas Mingguan</h5>
                         </div>
                         <span class="badge rounded-pill text-bg-info text-white px-3 py-2">Update 7 hari</span>
                     </div>
@@ -291,20 +292,20 @@ $menuPopulerMingguIni = !empty($menu_mingguan[0]) ? $menu_mingguan[0] : "Belum a
     <section class="py-2 pb-4">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-4">
             <div>
-                <div class="small text-uppercase text-muted mb-1">Kenapa pilih Sakina Kantin</div>
-                <h2 class="fw-bold mb-0">Simple dipakai, cepat dipantau, nyaman buat operasional.</h2>
+                <div class="small text-uppercase text-muted mb-1">Kenapa pilih Carwash App</div>
+                <h2 class="fw-bold mb-0">Simple dipakai, cepat dipantau, cocok buat operasional carwash.</h2>
             </div>
-            <div class="text-muted">Halaman utama dibuat ringkas supaya informasi penting langsung kelihatan.</div>
+            <div class="text-muted">Halaman utama dibuat ringkas supaya status operasional langsung kelihatan.</div>
         </div>
         <div class="row g-4">
             <div class="col-md-4">
                 <div class="card home-feature-card">
                     <div class="card-body p-4">
                         <div class="home-feature-icon mb-4">
-                            <i class="bi bi-lightning-charge-fill"></i>
+                            <i class="bi bi-speedometer2"></i>
                         </div>
                         <h5 class="fw-bold">Akses cepat</h5>
-                        <p class="text-muted mb-0">Order baru dan daftar menu bisa dibuka langsung dari halaman utama tanpa muter-muter.</p>
+                        <p class="text-muted mb-0">Buka transaksi, layanan, dan laporan lebih cepat dari dashboard utama.</p>
                     </div>
                 </div>
             </div>
@@ -312,10 +313,10 @@ $menuPopulerMingguIni = !empty($menu_mingguan[0]) ? $menu_mingguan[0] : "Belum a
                 <div class="card home-feature-card">
                     <div class="card-body p-4">
                         <div class="home-feature-icon mb-4">
-                            <i class="bi bi-graph-up-arrow"></i>
+                            <i class="bi bi-car-front"></i>
                         </div>
-                        <h5 class="fw-bold">Pantauan jelas</h5>
-                        <p class="text-muted mb-0">Grafik harian dan mingguan ditata lebih bersih supaya tren penjualan lebih gampang dibaca.</p>
+                        <h5 class="fw-bold">Pantauan kendaraan</h5>
+                        <p class="text-muted mb-0">Status kendaraan masuk, proses, dan selesai bisa dipantau lebih jelas.</p>
                     </div>
                 </div>
             </div>
@@ -323,10 +324,10 @@ $menuPopulerMingguIni = !empty($menu_mingguan[0]) ? $menu_mingguan[0] : "Belum a
                 <div class="card home-feature-card">
                     <div class="card-body p-4">
                         <div class="home-feature-icon mb-4">
-                            <i class="bi bi-patch-check-fill"></i>
+                            <i class="bi bi-shield-check"></i>
                         </div>
-                        <h5 class="fw-bold">Tampilan konsisten</h5>
-                        <p class="text-muted mb-0">Warna, kartu, dan jarak elemen dirapikan supaya home terasa modern tapi tetap familiar.</p>
+                        <h5 class="fw-bold">Operasional rapi</h5>
+                        <p class="text-muted mb-0">Tampilan dibuat stabil dan konsisten supaya enak dipakai harian oleh admin atau kasir.</p>
                     </div>
                 </div>
             </div>
@@ -334,17 +335,17 @@ $menuPopulerMingguIni = !empty($menu_mingguan[0]) ? $menu_mingguan[0] : "Belum a
     </section>
 
     <footer class="home-footer text-center py-3">
-        &copy; 2026 Sakina Kantin. Semua hak dilindungi.
+        &copy; 2026 Carwash App. Semua hak dilindungi.
     </footer>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    const labels = <?= json_encode($menu) ?>;
-    const dataValues = <?= json_encode($total) ?>;
-    const labelsMingguan = <?= json_encode($menu_mingguan) ?>;
-    const dataValuesMingguan = <?= json_encode($total_mingguan) ?>;
+    const labels = <?= json_encode($labels) ?>;
+    const dataValues = <?= json_encode($dataValues) ?>;
+    const labelsMingguan = <?= json_encode($labelsMingguan) ?>;
+    const dataValuesMingguan = <?= json_encode($dataValuesMingguan) ?>;
     const colors = ['#f29f58', '#2f7d5d', '#4c6ef5', '#ef4444', '#14b8a6'];
 
     function renderMenuChart(canvasId, labelsData, valuesData, emptyMessage) {
@@ -381,7 +382,7 @@ $menuPopulerMingguIni = !empty($menu_mingguan[0]) ? $menu_mingguan[0] : "Belum a
                     tooltip: {
                         callbacks: {
                             label: function(context) {
-                                return context.raw + ' porsi';
+                                return context.raw + ' transaksi';
                             }
                         }
                     }
@@ -407,6 +408,6 @@ $menuPopulerMingguIni = !empty($menu_mingguan[0]) ? $menu_mingguan[0] : "Belum a
         });
     }
 
-    renderMenuChart('menuTerlarisChart', labels, dataValues, 'Belum ada penjualan hari ini');
-    renderMenuChart('menuTerlarisMingguanChart', labelsMingguan, dataValuesMingguan, 'Belum ada penjualan minggu ini');
+    renderMenuChart('menuTerlarisChart', labels, dataValues, 'Belum ada data dashboard hari ini');
+    renderMenuChart('menuTerlarisMingguanChart', labelsMingguan, dataValuesMingguan, 'Belum ada data dashboard minggu ini');
 </script>
