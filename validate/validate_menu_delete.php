@@ -3,19 +3,14 @@ session_start();
 
 include("../Database/connect.php");
 $id = (isset($_POST["id"])) ? htmlentities($_POST["id"]) : "";
-$foto = (isset($_POST["foto"])) ? htmlentities($_POST["foto"]) : "";
+// $foto = (isset($_POST["foto"])) ? htmlentities($_POST["foto"]) : "";
 
 
 
 if (isset($_POST['input_menu_delete'])) {
-      $query = mysqli_query($conn, "DELETE FROM tb_menu WHERE id = '$id'");
+      $query = mysqli_query($conn, "DELETE FROM tb_tarif WHERE id = '$id'");
       if ($query) {
             // Hapus file foto hanya jika memang ada.
-            $safeFoto = basename((string) $foto);
-            $pathFoto = "../assets/img/" . $safeFoto;
-            if (!empty($safeFoto) && file_exists($pathFoto)) {
-                  @unlink($pathFoto);
-            }
             echo "<script>alert('Menu berhasil Di Hapus'); window.location.href='../menu';</script>";
       } else {
             $dbError = mysqli_error($conn);
@@ -25,5 +20,4 @@ if (isset($_POST['input_menu_delete'])) {
                   echo "<script>alert('Gagal Menghapus menu'); window.location.href='../menu';</script>";
             }
       }
-}   
-?>
+}

@@ -4,7 +4,7 @@ $status_filter = isset($_POST['status_filter']) ? $_POST['status_filter'] : 'all
 $where_status = "";
 if ($status_filter === '1' || $status_filter === '0') {
     $status_val = (int) $status_filter;
-    $where_status = "AND tb_tarif.status = $status_val";
+    $where_status = "OR tb_tarif.status = $status_val";
 }
 
 $query = mysqli_query($conn, "select tb_tarif.* from tb_tarif
@@ -196,7 +196,7 @@ while ($record = mysqli_fetch_array($query)) {
                                     <form class="needs-validation" novalidate action="validate/validate_menu_edit.php"
                                         method="post" enctype="multipart/form-data">
                                         <input type="hidden" name="id" value="<?php echo $row['id'] ?>">
-                                        <div class="row mt-3">
+                                        <!-- <div class="row mt-3">
                                             <div class="col lg-12">
                                                 <div class="input-group">
                                                     <input type="file" class="form-control py-9" id="floatingInputGambar"
@@ -208,14 +208,14 @@ while ($record = mysqli_fetch_array($query)) {
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> -->
                                         <div class="row mt-3">
                                             <div class="col">
                                                 <div class="form-floating">
                                                     <input type="text" class="form-control" id="floatingNama"
-                                                        placeholder="Masukan Nama" name="nama_menu"
-                                                        value="<?php echo $row['nama'] ?>" required>
-                                                    <label for="floatingNama">Nama Makanan</label>
+                                                        placeholder="Masukan Nama" name="nama_tarif"
+                                                        value="<?php echo $row['nama_tarif'] ?>" required>
+                                                    <label for="floatingNama">Nama Tarif</label>
                                                     <div class="invalid-feedback">
                                                         Nama tidak boleh kosong
                                                     </div>
@@ -227,82 +227,67 @@ while ($record = mysqli_fetch_array($query)) {
                                                 <div class="form-floating">
                                                     <input type="text" class="form-control" id="floatingKeterangan"
                                                         placeholder="Masukan Keterangan" name="keterangan"
-                                                        value="<?php echo $row['keterangan'] ?>">
+                                                        value="<?php echo $row['keterangan_tarif'] ?>">
                                                     <label for="floatingKeterangan">Keterangan</label>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="row mt-3">
-                                            <div class="col lg-4">
+                                            <div class="col lg-6">
                                                 <div class="form-floating mt-3">
                                                     <select class="form-select" aria-label="Default select example"
-                                                        name="kategori_menu" required>
-                                                        <option selected hidden value="">Pilih Jenis Menu</option>
-                                                        <?php
-                                                        foreach ($sel_kategori as $row2) {
-                                                            if ($row['kategori'] == $row2['id_kategori']) {
-                                                                echo "<option selected value='" . $row2['id_kategori'] . "'>" . $row2['kategori_menu'] . "</option>";
-                                                            } else {
-                                                                echo "<option value='" . $row2['id_kategori'] . "'>" . $row2['kategori_menu'] . "</option>";
-                                                            }
-                                                        ?>
-
-                                                        <?php
-                                                        }
-                                                        ?>
+                                                        name="ukuran_Kendaraan" required>
+                                                        <option selected hidden value="<?php echo $row['ukuran_Kendaraan'] ?>"><?php echo $row['ukuran_Kendaraan'] ?></option>
+                                                        <option value="Besar">Besar</option>
+                                                        <option value="Sedang">Sedang</option>
+                                                        <option value="Kecil">Kecil</option>
                                                     </select>
-                                                    <label for="floatingKategori">Kategori Menu</label>
+                                                    <label for="floatingKategori">Kategori Ukuran</label>
                                                     <div class="invalid-feedback">
                                                         Jenis Menu tidak boleh kosong
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col lg-4">
-                                                <div class="form-floating mt-3">
-                                                    <input type="number" class="form-control" id="floatingHarga"
-                                                        placeholder="Masukan Harga" name="harga"
-                                                        value="<?php echo $row['harga'] ?>" required>
-                                                    <label for="floatingHarga">Harga</label>
-                                                    <div class="invalid-feedback">
-                                                        Harga tidak boleh kosong
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col lg-4">
-                                                <div class="form-floating mt-3">
-                                                    <input type="number" class="form-control" id="floatingStok"
-                                                        placeholder="Masukan Stok" name="pajak"
-                                                        value="<?php echo $row['pajak'] ?>" required>
-                                                    <label for="floatingStok">Margin</label>
-                                                    <div class="invalid-feedback">
-                                                        Marjin tidak boleh kosong
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row mt-3">
-                                            <div class="col">
+                                            <div class="col lg-6">
                                                 <div class="form-floating mt-3">
                                                     <select class="form-select" aria-label="Default select example"
-                                                        name="kios" required>
-                                                        <option selected hidden value="">Pilih Kios User</option>
-                                                        <?php
-                                                        foreach ($result2 as $row2) {
-                                                        ?>
-                                                            <option value="<?php echo $row2['nama'] ?>" <?php echo ($row['nama_toko'] == $row2['nama']) ? 'selected' : ''; ?>>
-                                                                <?php echo $row2['nama'] ?>
-                                                            </option>
-                                                        <?php
-                                                        }
-                                                        ?>
+                                                        name="jenis_Kendaraan" required>
+                                                        <option selected hidden value="<?php echo $row['jenis_Kendaraan'] ?>"><?php echo $row['jenis_Kendaraan'] ?></option>
+                                                        <option value="Mobil">Mobil</option>
+                                                        <option value="Motor">Motor</option>
                                                     </select>
-                                                    <label for="floatingKios">Kios</label>
+                                                    <label for="floatingKategori">Kategori Kendaraan</label>
                                                     <div class="invalid-feedback">
-                                                        Kios tidak boleh kosong
+                                                        Jenis Menu tidak boleh kosong
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row mt-3">
+                                                <div class="col lg-6">
+                                                    <div class="form-floating mt-3">
+                                                        <input type="number" class="form-control" id="floatingHarga"
+                                                            placeholder="Masukan Harga" name="harga_PT"
+                                                            value="<?php echo $row['bill_PT'] ?>" required>
+                                                        <label for="floatingHarga">Harga</label>
+                                                        <div class="invalid-feedback">
+                                                            Harga tidak boleh kosong
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col lg-6">
+                                                    <div class="form-floating mt-3">
+                                                        <input type="number" class="form-control" id="floatingStok"
+                                                            placeholder="Masukan Stok" name="harga_Karyawan"
+                                                            value="<?php echo $row['bill_Karyawan'] ?>" required>
+                                                        <label for="floatingStok">Margin</label>
+                                                        <div class="invalid-feedback">
+                                                            Marjin tidak boleh kosong
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
+
                                         <div class="row mt-3">
                                             <div class="col">
                                                 <div class="form-check">
@@ -342,11 +327,11 @@ while ($record = mysqli_fetch_array($query)) {
                                     <form class="needs-validation" novalidate action="validate/validate_menu_delete.php"
                                         method="post">
                                         <input type="hidden" name="id" value="<?php echo $row['id'] ?>">
-                                        <input type="hidden" name="foto" value="<?php echo $row['foto'] ?>">
+                                        <!-- <input type="hidden" name="foto" value="<?php echo $row['foto'] ?>"> -->
                                         <div class="col-lg-12">
 
                                             <h5>Apakah Anda yakin ingin menghapus menu
-                                                <strong><?php echo $row['nama'] ?></strong>?
+                                                <strong><?php echo $row['nama_tarif'] ?></strong>?
                                             </h5>
                                             <p>Data yang dihapus tidak dapat dikembalikan.</p>
 
@@ -376,19 +361,32 @@ while ($record = mysqli_fetch_array($query)) {
                                         aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <form class="needs-validation" novalidate action="validate/validate_menu.php"
+                                    <form class="needs-validation" novalidate action="validate/validate_menu_edit.php"
                                         method="post" enctype="multipart/form-data">
-                                        <div class="row mt-3">
-
-                                        </div>
+                                        <input type="hidden" name="id" value="<?php echo $row['id'] ?>">
+                                        <!-- <div class="row mt-3">
+                                            <div class="col lg-12">
+                                                <div class="input-group">
+                                                    <input type="file" class="form-control py-9" id="floatingInputGambar"
+                                                        placeholder="Masukan Gambar" name="foto">
+                                                    <label class="input-group-text" for="floatingInputGambar">Upload Foto
+                                                        Menu</label>
+                                                    <div class="invalid-feedback">
+                                                        Gambar tidak boleh kosong
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div> -->
                                         <div class="row mt-3">
                                             <div class="col">
                                                 <div class="form-floating">
                                                     <input type="text" class="form-control" id="floatingNama"
-                                                        placeholder="Masukan Nama" name="nama_menu"
-                                                        value="<?php echo $row['nama'] ?>" disabled>
-                                                    <label for="floatingNama">Nama Makanan</label>
-
+                                                        placeholder="Masukan Nama" name="nama_tarif"
+                                                        value="<?php echo $row['nama_tarif'] ?>" disabled>
+                                                    <label for="floatingNama">Nama Tarif</label>
+                                                    <div class="invalid-feedback">
+                                                        Nama tidak boleh kosong
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -397,85 +395,73 @@ while ($record = mysqli_fetch_array($query)) {
                                                 <div class="form-floating">
                                                     <input type="text" class="form-control" id="floatingKeterangan"
                                                         placeholder="Masukan Keterangan" name="keterangan"
-                                                        value="<?php echo $row['keterangan'] ?>" disabled>
+                                                        value="<?php echo $row['keterangan_tarif'] ?>" disabled>
                                                     <label for="floatingKeterangan">Keterangan</label>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="row mt-3">
-                                            <div class="col lg-4">
+                                            <div class="col lg-6">
                                                 <div class="form-floating mt-3">
-                                                    <select disabled class="form-select" aria-label="Default select example"
-                                                        name="kategori_menu" required>
-                                                        <option selected hidden value="">Pilih Jenis Menu</option>
-                                                        <?php
-                                                        foreach ($sel_kategori as $row2) {
-                                                            if ($row['kategori'] == $row2['id_kategori']) {
-                                                                echo "<option selected value='" . $row2['kategori'] . "'>" . $row2['kategori_menu'] . "</option>";
-                                                            } else {
-                                                                echo "<option value='" . $row2['kategori'] . "'>" . $row2['kategori_menu'] . "</option>";
-                                                            }
-                                                        ?>
-
-                                                        <?php
-                                                        }
-                                                        ?>
+                                                    <select class="form-select" aria-label="Default select example"
+                                                        name="ukuran_Kendaraan" disabled>
+                                                        <option selected hidden value="<?php echo $row['ukuran_Kendaraan'] ?>"><?php echo $row['ukuran_Kendaraan'] ?></option>
+                                                        <option value="Besar">Besar</option>
+                                                        <option value="Sedang">Sedang</option>
+                                                        <option value="Kecil">Kecil</option>
                                                     </select>
-                                                    <label for="floatingKategori">Kategori Menu</label>
+                                                    <label for="floatingKategori">Kategori Ukuran</label>
                                                     <div class="invalid-feedback">
                                                         Jenis Menu tidak boleh kosong
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col lg-4">
+                                            <div class="col lg-6">
                                                 <div class="form-floating mt-3">
-                                                    <input type="number" class="form-control" id="floatingHarga"
-                                                        placeholder="Masukan Harga" name="harga"
-                                                        value="<?php echo $row['harga'] ?>" disabled>
-                                                    <label for="floatingHarga">Harga</label>
-                                                    <div class="invalid-feedback">
-                                                        Harga tidak boleh kosong
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col lg-4">
-                                                <div class="form-floating mt-3">
-                                                    <input type="number" class="form-control" id="floatingStok" placeholder="Masukan Stok" name="pajak" value="<?php echo $row['pajak'] ?>" disabled>
-                                                    <label for="floatingStok">Margin</label>
-                                                    <div class="invalid-feedback">
-                                                        Margin tidak boleh kosong
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row mt-3">
-                                            <div class="col">
-                                                <div class="form-floating mt-3">
-                                                    <select disabled class="form-select" aria-label="Default select example"
-                                                        name="kios" required>
-                                                        <option selected hidden value="">Pilih Kios User</option>
-                                                        <?php
-                                                        foreach ($result2 as $row2) {
-                                                        ?>
-                                                            <option value="<?php echo $row2['nama'] ?>" <?php echo ($row['nama_toko'] == $row2['nama']) ? 'selected' : ''; ?>>
-                                                                <?php echo $row2['nama'] ?>
-                                                            </option>
-                                                        <?php
-                                                        }
-                                                        ?>
+                                                    <select class="form-select" aria-label="Default select example"
+                                                        name="jenis_Kendaraan" disabled>
+                                                        <option selected hidden value="<?php echo $row['jenis_Kendaraan'] ?>"><?php echo $row['jenis_Kendaraan'] ?></option>
+                                                        <option value="Mobil">Mobil</option>
+                                                        <option value="Motor">Motor</option>
                                                     </select>
-                                                    <label for="floatingKios">Kios</label>
+                                                    <label for="floatingKategori">Kategori Kendaraan</label>
                                                     <div class="invalid-feedback">
-                                                        Kios tidak boleh kosong
+                                                        Jenis Menu tidak boleh kosong
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row mt-3">
+                                                <div class="col lg-6">
+                                                    <div class="form-floating mt-3">
+                                                        <input type="number" class="form-control" id="floatingHarga"
+                                                            placeholder="Masukan Harga" name="harga_PT"
+                                                            value="<?php echo $row['bill_PT'] ?>" disabled>
+                                                        <label for="floatingHarga">Harga</label>
+                                                        <div class="invalid-feedback">
+                                                            Harga tidak boleh kosong
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col lg-6">
+                                                    <div class="form-floating mt-3">
+                                                        <input type="number" class="form-control" id="floatingStok"
+                                                            placeholder="Masukan Stok" name="harga_Karyawan"
+                                                            value="<?php echo $row['bill_Karyawan'] ?>" disabled>
+                                                        <label for="floatingStok">Margin</label>
+                                                        <div class="invalid-feedback">
+                                                            Marjin tidak boleh kosong
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
+
+
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary"
                                                 data-bs-dismiss="modal">Close</button>
-                                            <button type="submit" class="btn btn-primary"
-                                                name="input_menu_proses">Simpan</button>
+                                            <!-- <button type="submit" class="btn btn-primary"
+                                                name="input_menu_edit_proses">Simpan</button> -->
                                         </div>
                                     </form>
                                 </div>

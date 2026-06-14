@@ -9,14 +9,13 @@ if (isset($_POST['toggle_menu_status'])) {
     $new_status = ($status === 1) ? 0 : 1;
 
     if ($id !== "") {
-        $query = mysqli_query($conn, "UPDATE tb_menu SET status = '$new_status' WHERE id = '$id'");
+        $query = mysqli_query($conn, "UPDATE tb_tarif SET status = '$new_status' WHERE id = '$id'");
         if ($query) {
-            echo "<script>alert('Status menu berhasil diubah'); window.location.href='../menu';</script>";
+            echo "<script>alert('Status tarif berhasil diubah'); window.location.href='../menu';</script>";
         } else {
-            echo "<script>alert('Gagal mengubah status menu'); window.location.href='../menu';</script>";
+            echo "<script>alert('Gagal mengubah status tarif'); window.location.href='../menu';</script>";
         }
     } else {
-        echo "<script>alert('ID menu tidak valid'); window.location.href='../menu';</script>";
+        echo "<script>alert('ID tarif tidak valid'); window.location.href='../menu';</script>";
     }
 }
-?>

@@ -15,11 +15,11 @@
         </a>
     </li>
 
-    <li class="nav-item">
+    <!-- <li class="nav-item">
         <a class="nav-link" href="http://192.168.0.215:8000/app/login">
             <i class="fas fa-fw fa-external-link-alt"></i> <span>aplikasi baru</span>
         </a>
-    </li>
+    </li> -->
 
     <hr class="sidebar-divider">
 
@@ -72,7 +72,7 @@
                 <div class="bg-white py-2 collapse-inner rounded">
                     <h6 class="collapse-header">Manajemen Data:</h6>
                     <a class="collapse-item" href="user">Manajemen User</a>
-                    <a class="collapse-item" href="kios">Manajemen Toko</a>
+                    <!-- <a class="collapse-item" href="kios">Manajemen Toko</a> -->
                 </div>
             </div>
         </li>

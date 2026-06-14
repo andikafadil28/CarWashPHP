@@ -3,9 +3,9 @@
 include "Database/connect.php";
 date_default_timezone_set("Asia/Jakarta");
 $where_clause = "";
-$kios_filter = "";
+$jenis_filter = "";
 // $sel_kategori = mysqli_query($conn, "SELECT id_kategor i,kategori_menu FROM tb_kategori_menu");
-$query2 = mysqli_query($conn, "select * from tb_kios");
+$query2 = mysqli_query($conn, "select * from tb_tarif");
 
 
 // var_dump($result);
@@ -29,18 +29,18 @@ while ($record2 = mysqli_fetch_array($query2)) {
                 <form method="POST">
                     <div class="row g-3 align-items-end">
                         <div class="col-12 col-md-4 col-lg-3">
-                            <label for="kios_filter" class="form-label fw-semibold">Nama Kios</label>
-                            <select class="form-select" id="kios_filter" name="kios_filter">
+                            <label for="kios_filter" class="form-label fw-semibold">Jenis Kendaraan</label>
+                            <select class="form-select" id="jenis_filter" name="jenis_filter">
                                 <option selected hidden>Pilih</option>
                                 <option value="all">All</option>
                                 <?php
                                 foreach ($result2 as $row2) {
-                                    $selected = (isset($_POST['kios_filter']) && $_POST['kios_filter'] == $row2['nama']) ? 'selected' : '';
-                                    ?>
-                                    <option value="<?php echo $row2['nama'] ?>" <?php echo $selected; ?>>
-                                        <?php echo $row2['nama'] ?>
+                                    $selected = (isset($_POST['jenis_filter']) && $_POST['jenis_filter'] == $row2['jenis_Kendaraan']) ? 'selected' : '';
+                                ?>
+                                    <option value="<?php echo $row2['jenis_Kendaraan'] ?>" <?php echo $selected; ?>>
+                                        <?php echo $row2['jenis_Kendaraan'] ?>
                                     </option>
-                                    <?php
+                                <?php
                                 }
                                 ?>
                             </select>
@@ -57,43 +57,32 @@ while ($record2 = mysqli_fetch_array($query2)) {
             <div class="row">
                 <?php
                 // Logika Query SQL (TIDAK DIUBAH SAMA SEKALI)
-                if (isset($_POST['filter']) && isset($_POST['kios_filter']) && $_POST['kios_filter'] === 'all') {
+                if (isset($_POST['filter']) && isset($_POST['jenis_filter']) && $_POST['jenis_filter'] === 'all') {
                     // Filter untuk SEMUA kios
-                    $query_string = "SELECT *, SUM(((harga+pajak)+((harga+pajak)*0.11))*jumlah) AS harganya from tb_order
+                    $query_string = "SELECT * from tb_order
                                              LEFT JOIN user ON user.id = tb_order.kasir
                                              LEFT JOIN tb_list_order ON tb_list_order.kode_order = tb_order.id_order
-                                             LEFT JOIN tb_menu ON tb_menu.id = tb_list_order.menu
+                                             LEFT JOIN tb_tarif ON tb_tarif.id = tb_list_order.tarif
                                              LEFT JOIN tb_bayar ON tb_bayar.id_bayar = tb_list_order.kode_order
                                              GROUP BY tb_order.id_order ORDER BY tb_order.waktu_order DESC
                                              LIMIT 250";
-                } else if (isset($_POST['filter']) && isset($_POST['kios_filter'])) {
+                } else if (isset($_POST['filter']) && isset($_POST['jenis_filter'])) {
                     // Filter untuk kios spesifik
-                    $kios_filter = mysqli_real_escape_string($conn, $_POST['kios_filter']);
-                    $query_string = "SELECT *, SUM(((harga+pajak)+((harga+pajak)*0.11))*jumlah) AS harganya from tb_order
+                    $jenis_filter = mysqli_real_escape_string($conn, $_POST['jenis_filter']);
+                    $query_string = "SELECT * from tb_order
                                              LEFT JOIN user ON user.id = tb_order.kasir
                                              LEFT JOIN tb_list_order ON tb_list_order.kode_order = tb_order.id_order
-                                             LEFT JOIN tb_menu ON tb_menu.id = tb_list_order.menu
+                                             LEFT JOIN tb_tarif ON tb_tarif.id = tb_list_order.tarif
                                              LEFT JOIN tb_bayar ON tb_bayar.id_bayar = tb_list_order.kode_order
-                                             WHERE tb_order.nama_kios = '$kios_filter'
+                                             WHERE tb_order.jenis_Kendaraan = '$jenis_filter'
                                              GROUP BY tb_order.id_order ORDER BY tb_order.waktu_order DESC
                                              LIMIT 250";
-                } else if ($_SESSION["level_kantin"] == 3) {
-                    $kios_filter = $_SESSION['nama_toko_kantin'];
-                    $query_string = "SELECT *, SUM(((harga+pajak)+((harga+pajak)*0.11))*jumlah) AS harganya from tb_order
-                                             LEFT JOIN user ON user.id = tb_order.kasir
-                                             LEFT JOIN tb_list_order ON tb_list_order.kode_order = tb_order.id_order
-                                             LEFT JOIN tb_menu ON tb_menu.id = tb_list_order.menu
-                                             LEFT JOIN tb_bayar ON tb_bayar.id_bayar = tb_list_order.kode_order
-                                             WHERE tb_order.nama_kios = '$kios_filter'
-                                             GROUP BY tb_order.id_order ORDER BY tb_order.waktu_order DESC
-                                             LIMIT 250";
-
                 } else {
                     // Query default (tampilkan semua data tanpa filter)
-                    $query_string = "SELECT *, SUM(((harga+pajak)+((harga+pajak)*0.11))*jumlah) AS harganya from tb_order
+                    $query_string = "SELECT * from tb_order
                                              LEFT JOIN user ON user.id = tb_order.kasir
                                              LEFT JOIN tb_list_order ON tb_list_order.kode_order = tb_order.id_order
-                                             LEFT JOIN tb_menu ON tb_menu.id = tb_list_order.menu
+                                             LEFT JOIN tb_tarif ON tb_tarif.id = tb_list_order.tarif
                                              LEFT JOIN tb_bayar ON tb_bayar.id_bayar = tb_list_order.kode_order
                                              GROUP BY tb_order.id_order ORDER BY tb_order.waktu_order DESC
                                              LIMIT 250";
@@ -117,13 +106,13 @@ while ($record2 = mysqli_fetch_array($query2)) {
                 </div>
                 <?php
                 include "inc/modal/modal_order.php"
-                    ?>
+                ?>
                 <?php
                 if (empty($result)) {
                     // Notifikasi data kosong yang lebih menarik
                     echo '<div class="alert alert-warning text-center" role="alert"><i class="bi bi-info-circle me-2"></i> **Tidak ada data order** yang ditemukan.</div>';
                 } else {
-                    ?>
+                ?>
                     <div class="table-responsive">
                         <table class="table table-striped table-hover table-bordered caption-top align-middle"
                             id="table_order">
@@ -149,7 +138,7 @@ while ($record2 = mysqli_fetch_array($query2)) {
                                 foreach ($result as $row) {
                                     $total_bayar_akhir = $row['harganya'] - $row['diskon'];
                                     $is_paid = !empty($row['id_bayar']);
-                                    ?>
+                                ?>
                                     <tr>
                                         <th scope="row" class="text-center"><?php echo $id_nomor++ ?></th>
                                         <td class="fw-bold text-primary"><?php echo $row['id_order'] ?></td>
@@ -171,7 +160,7 @@ while ($record2 = mysqli_fetch_array($query2)) {
                                                 <?php
                                                 if ($_SESSION["level_kantin"] == 1) {
 
-                                                    ?>
+                                                ?>
                                                     <a class="btn btn-info btn-sm me-2"
                                                         href="./?x=orderitem&kode_order=<?php echo $row['id_order'] . "&meja=" . $row['meja'] . "&pelanggan=" . $row['pelanggan'] . "&kios=" . $row['nama_kios']; ?>&diskon=<?php echo (empty($row['diskon'])) ? 0 : $row['diskon']; ?>"><i
                                                             class="bi bi-eye-fill"></i></a>
@@ -181,9 +170,9 @@ while ($record2 = mysqli_fetch_array($query2)) {
                                                     <button class="btn btn-danger btn-sm me-2" data-bs-toggle="modal"
                                                         data-bs-target="#ModalDelete<?php echo $row['id_order'] ?>"> <i
                                                             class="bi bi-trash-fill"></i></button>
-                                                    <?php
+                                                <?php
                                                 } else {
-                                                    ?>
+                                                ?>
                                                     <a class="btn btn-info btn-sm me-2"
                                                         href="./?x=orderitem&kode_order=<?php echo $row['id_order'] . "&meja=" . $row['meja'] . "&pelanggan=" . $row['pelanggan'] . "&kios=" . $row['nama_kios']; ?>&diskon=<?php echo (empty($row['diskon'])) ? 0 : $row['diskon']; ?>"><i
                                                             class="bi bi-eye-fill"></i></a>
@@ -197,7 +186,7 @@ while ($record2 = mysqli_fetch_array($query2)) {
                                                         data-bs-toggle="modal"
                                                         data-bs-target="#ModalDelete<?php echo $row['id_order'] ?>"> <i
                                                             class="bi bi-trash-fill"></i></button>
-                                                    <?php
+                                                <?php
                                                 }
                                                 ?>
                                                 <!-- <button class="btn btn-info btn-sm me-2" data-bs-toggle="modal" data-bs-target="#ModalView<?php echo $row['id_order'] ?>"> <i class="bi bi-eye-fill"></i></button> -->
@@ -205,13 +194,13 @@ while ($record2 = mysqli_fetch_array($query2)) {
                                             </div>
                                         </td>
                                     </tr>
-                                    <?php
+                                <?php
                                 }
                                 ?>
                             </tbody>
                         </table>
                     </div>
-                    <?php
+                <?php
                 }
                 ?>
             </div>
@@ -241,7 +230,7 @@ while ($record2 = mysqli_fetch_array($query2)) {
 </script>
 <script>
     // Pastikan DataTables sudah dimuat
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         if (typeof DataTable !== 'undefined') {
             let table = new DataTable('#table_order', {
                 responsive: true,
