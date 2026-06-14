@@ -4,17 +4,15 @@ $status_filter = isset($_POST['status_filter']) ? $_POST['status_filter'] : 'all
 $where_status = "";
 if ($status_filter === '1' || $status_filter === '0') {
     $status_val = (int) $status_filter;
-    $where_status = "AND tb_menu.status = $status_val";
+    $where_status = "AND tb_tarif.status = $status_val";
 }
 
-$query = mysqli_query($conn, "select tb_menu.*, tb_kategori_menu.kategori_menu, tb_kategori_menu.jenis_menu from tb_menu
-LEFT JOIN tb_kategori_menu ON tb_kategori_menu.id_kategori = tb_menu.kategori
-LEFT JOIN tb_kios ON tb_kios.nama = tb_menu.nama_toko
-WHERE tb_kios.status = 1
+$query = mysqli_query($conn, "select tb_tarif.* from tb_tarif
+WHERE tb_tarif.status = 1
 $where_status
-ORDER BY tb_menu.status DESC, tb_menu.nama ASC");
-$sel_kategori = mysqli_query($conn, "SELECT id_kategori,kategori_menu FROM tb_kategori_menu");
-$query2 = mysqli_query($conn, "select * from tb_kios WHERE status = 1");
+ORDER BY tb_tarif.status DESC, tb_tarif.nama_tarif ASC");
+// $sel_kategori = mysqli_query($conn, "SELECT id_kategori,kategori_menu FROM tb_kategori_menu");
+$query2 = mysqli_query($conn, "select * from tb_tarif WHERE status = 1");
 while ($record2 = mysqli_fetch_array($query2)) {
     $result2[] = $record2;
 }
@@ -29,18 +27,17 @@ while ($record = mysqli_fetch_array($query)) {
     <div class="card">
         <div class="card-header">
             <i class="bi bi-fork-knife"></i>
-            Menu
+            Tarif
         </div>
         <div class="card-body-scrollable">
             <div class="row">
                 <?php
                 if ($_SESSION["level_kantin"] == 1) {
-                    ?>
+                ?>
                     <div class="col d-flex justify-content-end mb-3">
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ModalTambah">Tambah
-                            Menu</button>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ModalTambah">Tambah Tarif</button>
                     </div>
-                    <?php
+                <?php
                 } else {
                 }
                 ?>
@@ -66,14 +63,14 @@ while ($record = mysqli_fetch_array($query)) {
                     <div class="modal-dialog modal-xl modal-fullscreen-md-down">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="staticBackdropLabel">Tambah Makanan Dan Minuman</h1>
+                                <h1 class="modal-title fs-5" id="staticBackdropLabel">Tambah Tarif</h1>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
                                 <form class="needs-validation" novalidate action="validate/validate_menu.php"
                                     method="post" enctype="multipart/form-data">
-                                    <div class="row mt-3">
+                                    <!-- <div class="row mt-3">
                                         <div class="col lg-12">
                                             <div class="input-group">
                                                 <input type="file" class="form-control py-9" id="floatingInputGambar"
@@ -83,13 +80,13 @@ while ($record = mysqli_fetch_array($query)) {
                                             </div>
                                             <small class="text-muted">Foto opsional, boleh dikosongkan.</small>
                                         </div>
-                                    </div>
+                                    </div> -->
                                     <div class="row mt-3">
                                         <div class="col">
                                             <div class="form-floating">
                                                 <input type="text" class="form-control" id="floatingNama"
-                                                    placeholder="Masukan Nama" name="nama_menu" required>
-                                                <label for="floatingNama">Nama Makanan</label>
+                                                    placeholder="Masukan Nama" name="nama_tarif" required>
+                                                <label for="floatingNama">Nama Tarif</label>
                                                 <div class="invalid-feedback">
                                                     Nama tidak boleh kosong
                                                 </div>
@@ -106,32 +103,12 @@ while ($record = mysqli_fetch_array($query)) {
                                         </div>
                                     </div>
                                     <div class="row mt-3">
-                                        <div class="col lg-4">
-                                            <div class="form-floating mt-3">
-                                                <select class="form-select" aria-label="Default select example"
-                                                    name="kategori_menu" required>
-                                                    <option selected hidden value="">Pilih Jenis Menu</option>
-                                                    <?php
-                                                    foreach ($sel_kategori as $row2) {
-                                                        ?>
-                                                        <option value="<?php echo $row2['id_kategori'] ?>">
-                                                            <?php echo $row2['kategori_menu'] ?>
-                                                        </option>
-                                                        <?php
-                                                    }
-                                                    ?>
-                                                </select>
-                                                <label for="floatingKategori">Kategori Menu</label>
-                                                <div class="invalid-feedback">
-                                                    Jenis Menu tidak boleh kosong
-                                                </div>
-                                            </div>
-                                        </div>
+
                                         <div class="col lg-4">
                                             <div class="form-floating mt-3">
                                                 <input type="number" class="form-control" id="floatingHarga"
-                                                    placeholder="Masukan Harga" name="harga" required>
-                                                <label for="floatingHarga">Harga</label>
+                                                    placeholder="Masukan Harga" name="harga_PT" required>
+                                                <label for="floatingHarga">Harga PT</label>
                                                 <div class="invalid-feedback">
                                                     Harga tidak boleh kosong
                                                 </div>
@@ -140,33 +117,41 @@ while ($record = mysqli_fetch_array($query)) {
                                         <div class="col lg-4">
                                             <div class="form-floating mt-3">
                                                 <input type="number" class="form-control" id="floatingStok"
-                                                    placeholder="Masukan Stok" name="pajak" required>
-                                                <label for="floatingStok">Margin</label>
+                                                    placeholder="Masukan Stok" name="harga_Karyawan" required>
+                                                <label for="floatingStok">Harga Karyawan</label>
                                                 <div class="invalid-feedback">
-                                                    Margin tidak boleh kosong
+                                                    Harga tidak boleh kosong
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row mt-3">
-                                        <div class="col">
+                                        <div class="col lv-6">
                                             <div class="form-floating mt-3">
                                                 <select class="form-select" aria-label="Default select example"
-                                                    name="kios" required>
-                                                    <option selected hidden value="">Pilih Kios User</option>
-                                                    <?php
-                                                    foreach ($result2 as $row2) {
-                                                        ?>
-                                                        <option value="<?php echo $row2['nama'] ?>">
-                                                            <?php echo $row2['nama'] ?>
-                                                        </option>
-                                                        <?php
-                                                    }
-                                                    ?>
+                                                    name="ukuran_Kendaraan" required>
+                                                    <option selected hidden value="">Pilih Ukuran Kendaraan</option>
+                                                    <option value="Besar">Besar</option>
+                                                    <option value="Sedang">Sedang</option>
+                                                    <option value="Kecil">Kecil</option>
                                                 </select>
-                                                <label for="floatingKios">Kios</label>
+                                                <label for="floatingKategori">Kategori Ukuran</label>
                                                 <div class="invalid-feedback">
-                                                    Kios tidak boleh kosong
+                                                    Jenis Menu tidak boleh kosong
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col lg-6">
+                                            <div class="form-floating mt-3">
+                                                <select class="form-select" aria-label="Default select example"
+                                                    name="jenis_Kendaraan" required>
+                                                    <option selected hidden value="">Pilih Jenis Kendaraan</option>
+                                                    <option value="Mobil">Mobil</option>
+                                                    <option value="Motor">Motor</option>
+                                                </select>
+                                                <label for="floatingKategori">Kategori Kendaraan</label>
+                                                <div class="invalid-feedback">
+                                                    Jenis Menu tidak boleh kosong
                                                 </div>
                                             </div>
                                         </div>
@@ -196,7 +181,7 @@ while ($record = mysqli_fetch_array($query)) {
                 <?php
 
                 foreach ($result as $row) {
-                    ?>
+                ?>
                     <!-- Modal edit -->
                     <div class="modal fade" id="ModalEdit<?php echo $row['id'] ?>" data-bs-backdrop="static"
                         data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -260,9 +245,9 @@ while ($record = mysqli_fetch_array($query)) {
                                                             } else {
                                                                 echo "<option value='" . $row2['id_kategori'] . "'>" . $row2['kategori_menu'] . "</option>";
                                                             }
-                                                            ?>
+                                                        ?>
 
-                                                            <?php
+                                                        <?php
                                                         }
                                                         ?>
                                                     </select>
@@ -303,11 +288,11 @@ while ($record = mysqli_fetch_array($query)) {
                                                         <option selected hidden value="">Pilih Kios User</option>
                                                         <?php
                                                         foreach ($result2 as $row2) {
-                                                            ?>
+                                                        ?>
                                                             <option value="<?php echo $row2['nama'] ?>" <?php echo ($row['nama_toko'] == $row2['nama']) ? 'selected' : ''; ?>>
                                                                 <?php echo $row2['nama'] ?>
                                                             </option>
-                                                            <?php
+                                                        <?php
                                                         }
                                                         ?>
                                                     </select>
@@ -430,9 +415,9 @@ while ($record = mysqli_fetch_array($query)) {
                                                             } else {
                                                                 echo "<option value='" . $row2['kategori'] . "'>" . $row2['kategori_menu'] . "</option>";
                                                             }
-                                                            ?>
+                                                        ?>
 
-                                                            <?php
+                                                        <?php
                                                         }
                                                         ?>
                                                     </select>
@@ -471,11 +456,11 @@ while ($record = mysqli_fetch_array($query)) {
                                                         <option selected hidden value="">Pilih Kios User</option>
                                                         <?php
                                                         foreach ($result2 as $row2) {
-                                                            ?>
+                                                        ?>
                                                             <option value="<?php echo $row2['nama'] ?>" <?php echo ($row['nama_toko'] == $row2['nama']) ? 'selected' : ''; ?>>
                                                                 <?php echo $row2['nama'] ?>
                                                             </option>
-                                                            <?php
+                                                        <?php
                                                         }
                                                         ?>
                                                     </select>
@@ -497,32 +482,32 @@ while ($record = mysqli_fetch_array($query)) {
                             </div>
                         </div>
                     </div>
-                    <?php
+                <?php
                 }
                 ?>
                 <?php
                 if (empty($result)) {
                     echo "<div class='alert alert-warning'>Data tidak ditemukan</div>";
                 } else {
-                    ?>
+                ?>
                     <div class="table-responsive-lg-12">
                         <table class="table table-hover" id="table_menu">
                             <thead>
                                 <tr>
                                     <th scope="col">No</th>
-                                    <th scope="col">Foto Menu</th>
-                                    <th scope="col">Nama</th>
+                                    <th scope="col">Nama Tarif</th>
                                     <th scope="col">Keterangan</th>
-                                    <th scope="col">Jenis Menu</th>
-                                    <th scope="col">Kategori</th>
-                                    <th scope="col">Harga</th>
-                                    <th scope="col">Nama Toko</th>
+                                    <th scope="col">Ukuran Kendaraan</th>
+                                    <th scope="col">Jenis Kendaraan</th>
+                                    <th scope="col">Harga PT</th>
+                                    <th scope="col">Harga Karyawan</th>
+                                    <th scope="col">Harga Jual</th>
                                     <th scope="col">Status</th>
                                     <?php
                                     if ($_SESSION["level_kantin"] == 1) {
-                                        ?>
+                                    ?>
                                         <th scope="col">Aksi</th>
-                                        <?php
+                                    <?php
                                     } else {
                                     }
                                     ?>
@@ -532,25 +517,16 @@ while ($record = mysqli_fetch_array($query)) {
                                 <?php
                                 $id_nomor = 1;
                                 foreach ($result as $row) {
-                                    ?>
+                                ?>
                                     <tr>
                                         <th scope="row"><?php echo $id_nomor++ ?></th>
-                                        <td>
-                                            <div style="width: 100px;">
-                                                <?php if (!empty($row['foto'])) { ?>
-                                                    <img src="assets/img/<?php echo $row['foto'] ?>" class="img-thumbnail"
-                                                        alt="<?php echo htmlspecialchars($row['nama']); ?>">
-                                                <?php } else { ?>
-                                                    <span class="badge bg-light text-dark border">Tanpa Foto</span>
-                                                <?php } ?>
-                                            </div>
-                                        </td>
-                                        <td><?php echo $row['nama'] ?></td>
-                                        <td><?php echo $row['keterangan'] ?></td>
-                                        <td><?php echo ($row['jenis_menu'] == 1) ? "Makanan" : "Minuman" ?></td>
-                                        <td><?php echo $row['kategori_menu'] ?></td>
-                                        <td><?php echo $row['harga'] + $row['pajak'] ?></td>
-                                        <td><?php echo $row['nama_toko'] ?></td>
+                                        <td><?php echo $row['nama_tarif'] ?></td>
+                                        <td><?php echo $row['keterangan_tarif'] ?></td>
+                                        <td><?php echo $row['ukuran_Kendaraan'] ?></td>
+                                        <td><?php echo $row['jenis_Kendaraan'] ?></td>
+                                        <td><?php echo $row['bill_PT'] ?></td>
+                                        <td><?php echo $row['bill_Karyawan'] ?></td>
+                                        <td><?php echo $row['bill_PT'] + $row['bill_Karyawan'] ?></td>
                                         <td>
                                             <?php if ((int) ($row['status'] ?? 0) === 1) { ?>
                                                 <span class="badge bg-success">Aktif</span>
@@ -560,7 +536,7 @@ while ($record = mysqli_fetch_array($query)) {
                                         </td>
                                         <?php
                                         if ($_SESSION["level_kantin"] == 1) {
-                                            ?>
+                                        ?>
                                             <td>
                                                 <div class="d-flex">
                                                     <button class="btn btn-info btn-sm me-2" data-bs-toggle="modal"
@@ -584,19 +560,19 @@ while ($record = mysqli_fetch_array($query)) {
                                                 </div>
 
                                             </td>
-                                            <?php
+                                        <?php
                                         } else {
                                         }
                                         ?>
 
                                     </tr>
-                                    <?php
+                                <?php
                                 }
                                 ?>
                             </tbody>
                         </table>
                     </div>
-                    <?php
+                <?php
                 }
                 ?>
 

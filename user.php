@@ -136,37 +136,21 @@ while ($record = mysqli_fetch_array($query)) {
                                                                                         echo "Admin";
                                                                                     } elseif ($row['level'] == 2) {
                                                                                         echo "Kasir";
-                                                                                    } elseif ($row['level'] == 3) {
-                                                                                        echo "Pemilik Kios";
                                                                                     } else {
                                                                                         echo "Unknown";
                                                                                     }
                                                                                     ?></option>
                                                             <option value="1">Admin</option>
                                                             <option value="2">Kasir</option>
-                                                            <option value="3">Pemilik Kios</option>
+
                                                         </select>
                                                         <label for="floatingInput">Level</label>
                                                     </div>
 
                                                 </div>
                                             </div>
-                                            <div class="col lg-6">
-                                                <div class="form-floating ">
-                                                    <!-- <input type="text" class="form-control" id="floatingkios" placeholder="Masukan Kios" name="kios" value=""> -->
-                                                    <select class="form-select" aria-label="Default select example" name="kios" required>
-                                                        <option selected hidden><?php echo $row['Kios'] ?></option>
-                                                        <?php
-                                                        foreach ($result2 as $row2) {
-                                                        ?>
-                                                            <option value="<?php echo $row2['nama'] ?>"><?php echo $row2['nama'] ?></option>
-                                                        <?php
-                                                        }
-                                                        ?>
-                                                    </select>
-                                                    <label for="floatingkios">Nama Kios</label>
-                                                </div>
-                                            </div>
+
+
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -258,12 +242,12 @@ while ($record = mysqli_fetch_array($query)) {
 
                                                 </div>
                                             </div>
-                                            <div class="col lg-6">
+                                            <!-- <div class="col lg-6">
                                                 <div class="form-floating ">
                                                     <input type="text" class="form-control" id="floatingkios" placeholder="Masukan Kios" name="kios" value="<?php echo $row['Kios'] ?>" readonly>
                                                     <label for="floatingkios">Nama Kios</label>
                                                 </div>
-                                            </div>
+                                            </div> -->
                                         </div>
 
                                     </form>
@@ -290,7 +274,6 @@ while ($record = mysqli_fetch_array($query)) {
                                     <th scope="col">Nama</th>
                                     <th scope="col">Password</th>
                                     <th scope="col">Level User</th>
-                                    <th scope="col">Role</th>
                                     <?php
                                     if ($_SESSION["level_kantin"] == 1) {
                                     ?>
@@ -322,7 +305,6 @@ while ($record = mysqli_fetch_array($query)) {
                                                 echo "Unknown";
                                             }
                                             ?></td>
-                                        <td><?php echo $row['role'] ?></td>
                                         <?php
                                         if ($_SESSION["level_kantin"] == 1) {
                                         ?>

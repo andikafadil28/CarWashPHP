@@ -2,13 +2,13 @@
 session_start();
 
 include("../Database/connect.php");
-$nama_menu = (isset($_POST["nama_menu"])) ? htmlentities($_POST["nama_menu"]) : "";
+$nama_tarif = (isset($_POST["nama_tarif"])) ? htmlentities($_POST["nama_tarif"]) : "";
 $keterangan = (isset($_POST["keterangan"])) ? htmlentities($_POST["keterangan"]) : "";
-$kategori_menu = (isset($_POST["kategori_menu"])) ? htmlentities($_POST["kategori_menu"]) : "";
-$harga = (isset($_POST["harga"])) ? htmlentities($_POST["harga"]) : "";
-$stok = (isset($_POST["stok"])) ? htmlentities($_POST["stok"]) : "";
-$kios = (isset($_POST["kios"])) ? htmlentities($_POST["kios"]) : "";
-$pajak = (isset($_POST["pajak"])) ? htmlentities($_POST["pajak"]) : "";
+$ukuran_Kendaraan = (isset($_POST["ukuran_Kendaraan"])) ? htmlentities($_POST["ukuran_Kendaraan"]) : "";
+$jenis_Kendaraan = (isset($_POST["jenis_Kendaraan"])) ? htmlentities($_POST["jenis_Kendaraan"]) : "";
+$harga_PT = (isset($_POST["harga_PT"])) ? htmlentities($_POST["harga_PT"]) : "";
+// $stok = (isset($_POST["stok"])) ? htmlentities($_POST["stok"]) : "";
+$harga_Karyawan = (isset($_POST["harga_Karyawan"])) ? htmlentities($_POST["harga_Karyawan"]) : "";
 $status = isset($_POST["status_aktif"]) ? 1 : 0;
 
 
@@ -24,49 +24,49 @@ if (isset($_POST['input_menu_proses'])) {
     $statusUpload = 1;
     $namaFileFoto = "";
 
-    if ($hasPhoto) {
-        $cek = getimagesize($_FILES["foto"]["tmp_name"]);
-        if ($cek === false) {
-            echo "<script>alert('File yang diupload bukan gambar'); window.location.href='../menu';</script>";
-            $statusUpload = 0;
-        } else {
-            if (file_exists($target_file)) {
-                echo "<script>alert('File sudah ada'); window.location.href='../menu';</script>";
-                $statusUpload = 0;
-            } elseif ($_FILES["foto"]["size"] > 500000) {
-                echo "<script>alert('File terlalu besar'); window.location.href='../menu';</script>";
-                $statusUpload = 0;
-            } elseif ($imageType != "jpg" && $imageType != "png" && $imageType != "jpeg" && $imageType != "gif") {
-                echo "<script>alert('Hanya file JPG, JPEG, PNG & GIF yang diperbolehkan'); window.location.href='../menu';</script>";
-                $statusUpload = 0;
-            }
-        }
-    }
+    // if ($hasPhoto) {
+    //     $cek = getimagesize($_FILES["foto"]["tmp_name"]);
+    //     if ($cek === false) {
+    //         echo "<script>alert('File yang diupload bukan gambar'); window.location.href='../menu';</script>";
+    //         $statusUpload = 0;
+    //     } else {
+    //         if (file_exists($target_file)) {
+    //             echo "<script>alert('File sudah ada'); window.location.href='../menu';</script>";
+    //             $statusUpload = 0;
+    //         } elseif ($_FILES["foto"]["size"] > 500000) {
+    //             echo "<script>alert('File terlalu besar'); window.location.href='../menu';</script>";
+    //             $statusUpload = 0;
+    //         } elseif ($imageType != "jpg" && $imageType != "png" && $imageType != "jpeg" && $imageType != "gif") {
+    //             echo "<script>alert('Hanya file JPG, JPEG, PNG & GIF yang diperbolehkan'); window.location.href='../menu';</script>";
+    //             $statusUpload = 0;
+    //         }
+    //     }
+    // }
 
     if ($statusUpload == 0) {
         exit();
     }
 
-    $select_query = mysqli_query($conn, "SELECT * FROM tb_menu WHERE nama = '$nama_menu'");
+    $select_query = mysqli_query($conn, "SELECT * FROM tb_tarif WHERE nama_tarif = '$nama_tarif'");
     if (mysqli_num_rows($select_query) > 0) {
-        echo "<script>alert('Menu sudah terdaftar'); window.location.href='../menu';</script>";
+        echo "<script>alert('Tarif sudah terdaftar'); window.location.href='../menu';</script>";
         exit();
     }
 
-    if ($hasPhoto) {
-        if (!move_uploaded_file($_FILES["foto"]["tmp_name"], $target_file)) {
-            echo "<script>alert('Gagal mengupload gambar'); window.location.href='../menu';</script>";
-            exit();
-        }
-        $namaFileFoto = $kode_rand . $_FILES['foto']['name'];
-    }
+    // if ($hasPhoto) {
+    //     if (!move_uploaded_file($_FILES["foto"]["tmp_name"], $target_file)) {
+    //         echo "<script>alert('Gagal mengupload gambar'); window.location.href='../menu';</script>";
+    //         exit();
+    //     }
+    //     $namaFileFoto = $kode_rand . $_FILES['foto']['name'];
+    // }
 
-    $query = mysqli_query($conn, "INSERT INTO tb_menu (nama, foto, keterangan , kategori , nama_toko , harga, pajak, status) 
-            VALUES ('$nama_menu', '$namaFileFoto', '$keterangan', '$kategori_menu', '$kios', '$harga', '$pajak', '$status')");
+    $query = mysqli_query($conn, "INSERT INTO tb_tarif (nama_tarif,keterangan_tarif , bill_PT , bill_Karyawan , jenis_Kendaraan, ukuran_Kendaraan, status) 
+            VALUES ('$nama_tarif','$keterangan', '$harga_PT', '$harga_Karyawan', '$jenis_Kendaraan', '$ukuran_Kendaraan', '$status')");
     if ($query) {
-        echo "<script>alert('Menu berhasil ditambahkan'); window.location.href='../menu';</script>";
+        echo "<script>alert('Tarif berhasil ditambahkan'); window.location.href='../menu';</script>";
     } else {
-        echo "<script>alert('Gagal menambahkan menu'); window.location.href='../menu';</script>";
+        echo "<script>alert('Gagal menambahkan Tarif'); window.location.href='../menu';</script>";
     }
 
     exit();

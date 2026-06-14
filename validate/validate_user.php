@@ -14,7 +14,7 @@ if (isset($_POST['input_user_proses'])) {
                 echo "<script>alert('Username sudah terdaftar'); window.location.href='../user';</script>";
                 exit();
         } else {
-                $query = mysqli_query($conn, "INSERT INTO user (username, password, level) VALUES ('$username', '$password_hash', '$level')");
+                $query = mysqli_query($conn, "INSERT INTO user (username, password, level,status) VALUES ('$username', '$password_hash', '$level','1')");
                 if ($query) {
                         echo "<script>alert('User berhasil ditambahkan'); window.location.href='../user';</script>";
                 } else {
