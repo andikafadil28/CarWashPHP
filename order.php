@@ -59,7 +59,8 @@ while ($record2 = mysqli_fetch_array($query2)) {
                 // Logika Query SQL (TIDAK DIUBAH SAMA SEKALI)
                 if (isset($_POST['filter']) && isset($_POST['jenis_filter']) && $_POST['jenis_filter'] === 'all') {
                     // Filter untuk SEMUA kios
-                    $query_string = "SELECT * from tb_order
+                    $query_string = "SELECT *,tb_order.jenis_Kendaraan as jenis_K,tb_order.ukuran_Kendaraan as ukuran_K,
+                                             COALESCE(SUM((tb_tarif.bill_PT + tb_tarif.bill_Karyawan) * tb_list_order.jumlah), 0) as harganya from tb_order
                                              LEFT JOIN user ON user.id = tb_order.kasir
                                              LEFT JOIN tb_list_order ON tb_list_order.kode_order = tb_order.id_order
                                              LEFT JOIN tb_tarif ON tb_tarif.id = tb_list_order.tarif
@@ -69,7 +70,8 @@ while ($record2 = mysqli_fetch_array($query2)) {
                 } else if (isset($_POST['filter']) && isset($_POST['jenis_filter'])) {
                     // Filter untuk kios spesifik
                     $jenis_filter = mysqli_real_escape_string($conn, $_POST['jenis_filter']);
-                    $query_string = "SELECT * from tb_order
+                    $query_string = "SELECT *,tb_order.jenis_Kendaraan as jenis_K,tb_order.ukuran_Kendaraan as ukuran_K,
+                                             COALESCE(SUM((tb_tarif.bill_PT + tb_tarif.bill_Karyawan) * tb_list_order.jumlah), 0) as harganya from tb_order
                                              LEFT JOIN user ON user.id = tb_order.kasir
                                              LEFT JOIN tb_list_order ON tb_list_order.kode_order = tb_order.id_order
                                              LEFT JOIN tb_tarif ON tb_tarif.id = tb_list_order.tarif
@@ -79,7 +81,8 @@ while ($record2 = mysqli_fetch_array($query2)) {
                                              LIMIT 250";
                 } else {
                     // Query default (tampilkan semua data tanpa filter)
-                    $query_string = "SELECT * from tb_order
+                    $query_string = "SELECT *,tb_order.jenis_Kendaraan as jenis_K,tb_order.ukuran_Kendaraan as ukuran_K,
+                                             COALESCE(SUM((tb_tarif.bill_PT + tb_tarif.bill_Karyawan) * tb_list_order.jumlah), 0) as harganya from tb_order
                                              LEFT JOIN user ON user.id = tb_order.kasir
                                              LEFT JOIN tb_list_order ON tb_list_order.kode_order = tb_order.id_order
                                              LEFT JOIN tb_tarif ON tb_tarif.id = tb_list_order.tarif
@@ -122,13 +125,15 @@ while ($record2 = mysqli_fetch_array($query2)) {
                                     <th scope="col" class="text-center">No</th>
                                     <th scope="col">Kode Order</th>
                                     <th scope="col">Pelanggan</th>
-                                    <th scope="col">Meja</th>
-                                    <th scope="col" class="text-end">Diskon</th>
+                                    <th scope="col">No Kendaraan</th>
+                                    <!-- <th scope="col" class="text-end">Diskon</th> -->
                                     <th scope="col" class="text-end">Total Bayar</th>
                                     <th scope="col">Kasir</th>
                                     <th scope="col" class="text-center">Status</th>
                                     <th scope="col">Waktu Order</th>
-                                    <th scope="col">Nama Toko</th>
+                                    <th scope="col">Catatan</th>
+                                    <th scope="col">jenis Kendaraan</th>
+                                    <th scope="col">Ukuran Kendaraan</th>
                                     <th scope="col" class="text-center">Aksi</th>
                                 </tr>
                             </thead>
@@ -138,13 +143,13 @@ while ($record2 = mysqli_fetch_array($query2)) {
                                 foreach ($result as $row) {
                                     $total_bayar_akhir = $row['harganya'] - $row['diskon'];
                                     $is_paid = !empty($row['id_bayar']);
-                                ?>
+                                    ?>
                                     <tr>
                                         <th scope="row" class="text-center"><?php echo $id_nomor++ ?></th>
                                         <td class="fw-bold text-primary"><?php echo $row['id_order'] ?></td>
                                         <td><?php echo $row['pelanggan'] ?></td>
-                                        <td><?php echo $row['meja'] ?></td>
-                                        <td class="text-end"><?php echo number_format($row['diskon'] ?? 0, 0, ',', '.') ?></td>
+                                        <td><?php echo $row['no_Kendaraan'] ?></td>
+                                        <!-- <td class="text-end"><?php echo number_format($row['diskon'] ?? 0, 0, ',', '.') ?></td> -->
                                         <td class="text-end fw-bold text-success">
                                             <?php echo number_format($total_bayar_akhir, 0, ',', '.') ?>
                                         </td>
@@ -153,7 +158,10 @@ while ($record2 = mysqli_fetch_array($query2)) {
                                             <?php echo $is_paid ? "<span class='badge bg-success'><i class='bi bi-check-circle-fill me-1'></i> Dibayar</span>" : "<span class='badge bg-danger'><i class='bi bi-x-circle-fill me-1'></i> Belum Dibayar</span>"; ?>
                                         </td>
                                         <td><?php echo date('d-M-Y H:i', strtotime($row['waktu_order'])) ?></td>
-                                        <td><?php echo $row['nama_kios'] ?></td>
+                                        <td><?php echo $row['catatan'] ?></td>
+                                        <td><?php echo $row['jenis_K'] ?></td>
+                                        <td><?php echo $row['ukuran_K'] ?></td>
+                                        
                                         <td class="text-center">
                                             <div class="d-flex justify-content-center">
 
@@ -162,7 +170,7 @@ while ($record2 = mysqli_fetch_array($query2)) {
 
                                                 ?>
                                                     <a class="btn btn-info btn-sm me-2"
-                                                        href="./?x=orderitem&kode_order=<?php echo $row['id_order'] . "&meja=" . $row['meja'] . "&pelanggan=" . $row['pelanggan'] . "&kios=" . $row['nama_kios']; ?>&diskon=<?php echo (empty($row['diskon'])) ? 0 : $row['diskon']; ?>"><i
+                                                        href="./?x=orderitem&kode_order=<?php echo urlencode($row['id_order']) . "&no_Kendaraan=" . urlencode($row['no_Kendaraan']) . "&pelanggan=" . urlencode($row['pelanggan']) . "&catatan=" . urlencode($row['catatan']) . "&jenis_Kendaraan=" . urlencode($row['jenis_K']) . "&ukuran_Kendaraan=" . urlencode($row['ukuran_K']); ?>&diskon=<?php echo (empty($row['diskon'])) ? 0 : urlencode($row['diskon']); ?>"><i
                                                             class="bi bi-eye-fill"></i></a>
                                                     <button class="btn btn-warning btn-sm me-2" data-bs-toggle="modal"
                                                         data-bs-target="#ModalEdit<?php echo $row['id_order'] ?>"> <i
@@ -174,7 +182,7 @@ while ($record2 = mysqli_fetch_array($query2)) {
                                                 } else {
                                                 ?>
                                                     <a class="btn btn-info btn-sm me-2"
-                                                        href="./?x=orderitem&kode_order=<?php echo $row['id_order'] . "&meja=" . $row['meja'] . "&pelanggan=" . $row['pelanggan'] . "&kios=" . $row['nama_kios']; ?>&diskon=<?php echo (empty($row['diskon'])) ? 0 : $row['diskon']; ?>"><i
+                                                        href="./?x=orderitem&kode_order=<?php echo urlencode($row['id_order']) . "&no_Kendaraan=" . urlencode($row['no_Kendaraan']) . "&pelanggan=" . urlencode($row['pelanggan']) . "&catatan=" . urlencode($row['catatan']) . "&jenis_Kendaraan=" . urlencode($row['jenis_K']) . "&ukuran_Kendaraan=" . urlencode($row['ukuran_K']); ?>&diskon=<?php echo (empty($row['diskon'])) ? 0 : urlencode($row['diskon']); ?>"><i
                                                             class="bi bi-eye-fill"></i></a>
                                                     <button
                                                         class="<?php echo (!empty($row['id_bayar'])) ? "btn btn-secondary btn-sm me-2 disabled" : "btn btn-warning btn-sm me-2 "; ?> "

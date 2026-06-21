@@ -1,10 +1,50 @@
-<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion toggled" id="accordionSidebar">
+<style>
+    #accordionSidebar.carwash-sidebar {
+        background: linear-gradient(180deg, #084298 0%, #0b5ed7 52%, #0dcaf0 100%);
+    }
+
+    .carwash-sidebar .sidebar-brand {
+        min-height: 5rem;
+        letter-spacing: .02em;
+    }
+
+    .carwash-sidebar .sidebar-logo {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, .16);
+        padding: 5px;
+        box-shadow: 0 10px 24px rgba(4, 30, 66, .25);
+    }
+
+    .carwash-sidebar .nav-link {
+        border-radius: 8px;
+        margin: 0 .65rem;
+    }
+
+    .carwash-sidebar .nav-item.active .nav-link,
+    .carwash-sidebar .nav-link:hover {
+        background: rgba(255, 255, 255, .16);
+    }
+
+    .carwash-sidebar .collapse-inner {
+        border-radius: 8px !important;
+    }
+
+    .carwash-sidebar .collapse-item:active,
+    .carwash-sidebar .collapse-item:hover {
+        color: #084298;
+        background: #e7f6ff;
+    }
+</style>
+
+<ul class="navbar-nav sidebar sidebar-dark accordion toggled carwash-sidebar" id="accordionSidebar">
 
     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="home">
         <div class="sidebar-brand-icon">
-            <i class="bi bi-shop"></i>
+            <img class="sidebar-logo" src="assets/brand/carwash-logo.svg" alt="Carwash App">
         </div>
-        <div class="sidebar-brand-text mx-2">Sakina Kantin</div>
+        <div class="sidebar-brand-text mx-2">Carwash App</div>
     </a>
 
     <hr class="sidebar-divider my-0">
@@ -26,12 +66,12 @@
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseOrder"
             aria-expanded="true" aria-controls="collapseOrder">
-            <i class="bi bi-cash-coin"></i> <span>Transaksi & Menu</span>
+            <i class="bi bi-water"></i> <span>Transaksi & Layanan</span>
         </a>
         <div id="collapseOrder" class="collapse" aria-labelledby="headingOrder" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="menu">Daftar Menu</a>
-                <a class="collapse-item" href="order">Buat Order Baru</a>
+                <a class="collapse-item" href="menu">Daftar Layanan</a>
+                <a class="collapse-item" href="order">Order Cuci Baru</a>
             </div>
         </div>
     </li>
@@ -39,20 +79,20 @@
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseReport"
             aria-expanded="true" aria-controls="collapseReport">
-            <i class="bi bi-graph-up"></i> <span>Laporan Penjualan</span>
+            <i class="bi bi-graph-up-arrow"></i> <span>Laporan Carwash</span>
         </a>
         <div id="collapseReport" class="collapse" aria-labelledby="headingReport" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">Detail Pendapatan:</h6>
                 <a class="collapse-item" href="laporan">Pendapatan Detail</a>
-                <a class="collapse-item" href="laporanrs">Pendapatan Kantin Detail</a>
-                <a class="collapse-item" href="laporantoko">Pendapatan Toko Detail</a>
+                <!-- <a class="collapse-item" href="laporanrs">Pendapatan PT Detail</a>
+                <a class="collapse-item" href="laporantoko">Pendapatan Karyawan</a>
                 <h6 class="collapse-header mt-2">Rekapitulasi:</h6>
-                <a class="collapse-item" href="history">Rekap Toko</a>
-                <a class="collapse-item" href="rekaprs">Rekap RS</a>
-                <a class="collapse-item" href="rekapmenurs">Rekap Kantin</a>
+                <a class="collapse-item" href="history">Riwayat Transaksi</a>
+                <a class="collapse-item" href="rekaprs">Rekap PT</a>
+                <a class="collapse-item" href="rekapmenurs">Rekap Layanan</a>
                 <a class="collapse-item" href="rekapkeuangan">Rekap Keuangan</a>
-                <a class="collapse-item" href="rekapkeuanganmenu">Rekap Keuangan Menu</a>
+                <a class="collapse-item" href="rekapkeuanganmenu">Rekap Keuangan Layanan</a> -->
             </div>
         </div>
     </li>

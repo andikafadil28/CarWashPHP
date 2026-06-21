@@ -5,213 +5,214 @@ if (!empty($_SESSION["username_kantin"])) {
 }
 ?>
 
-<?php include 'head.php'; ?>
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="auto">
+<html lang="id">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
-    <meta name="generator" content="Astro v5.9.2">
-    <title>Signin Template · Bootstrap v5.3</title>
-    <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/sign-in/">
-    <script src="assets/js/color-modes.js"></script>
+    <meta name="description" content="Login aplikasi Carwash">
+    <title>Login - Carwash</title>
     <link href="assets/dist/css/bootstrap.min.css" rel="stylesheet">
-    <meta name="theme-color" content="#712cf9">
+    <link href="css/theme-kantin.css" rel="stylesheet">
     <link href="sign-in.css" rel="stylesheet">
+    <meta name="theme-color" content="#0B5ED7">
     <style>
-        .bd-placeholder-img {
-            font-size: 1.125rem;
-            text-anchor: middle;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            user-select: none
+        body.login-page {
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at top left, rgba(13, 110, 253, 0.18), transparent 32rem),
+                linear-gradient(135deg, #e7f6ff 0%, #f8fbff 46%, #d9ecff 100%);
+            color: #183153;
         }
 
-        @media (min-width: 768px) {
-            .bd-placeholder-img-lg {
-                font-size: 3.5rem
-            }
+        .login-shell {
+            width: min(100%, 960px);
+            padding: 1rem;
         }
 
-        .b-example-divider {
-            width: 100%;
-            height: 3rem;
-            background-color: #0000001a;
-            border: solid rgba(0, 0, 0, .15);
-            border-width: 1px 0;
-            box-shadow: inset 0 .5em 1.5em #0000001a, inset 0 .125em .5em #00000026
+        .login-card {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(320px, 380px);
+            overflow: hidden;
+            border: 0;
+            border-radius: 1.25rem;
+            box-shadow: 0 1.25rem 3rem rgba(24, 49, 83, 0.16);
         }
 
-        .b-example-vr {
-            flex-shrink: 0;
-            width: 1.5rem;
-            height: 100vh
-        }
-
-        .bi {
-            vertical-align: -.125em;
-            fill: currentColor
-        }
-
-        .nav-scroller {
+        .login-hero {
             position: relative;
-            z-index: 2;
-            height: 2.75rem;
-            overflow-y: hidden
+            min-height: 480px;
+            padding: 3rem;
+            color: #fff;
+            background:
+                linear-gradient(135deg, rgba(11, 94, 215, 0.96), rgba(13, 202, 240, 0.88)),
+                url("assets/brand/carwash-logo.svg") center 68% / 18rem no-repeat;
         }
 
-        .nav-scroller .nav {
-            display: flex;
-            flex-wrap: nowrap;
-            padding-bottom: 1rem;
-            margin-top: -1px;
-            overflow-x: auto;
-            text-align: center;
-            white-space: nowrap;
-            -webkit-overflow-scrolling: touch
+        .login-hero::after {
+            position: absolute;
+            right: -4rem;
+            bottom: -5rem;
+            width: 17rem;
+            height: 17rem;
+            content: "";
+            border: 2.5rem solid rgba(255, 255, 255, 0.14);
+            border-radius: 999px;
         }
 
-        .btn-bd-primary {
-            --bd-violet-bg: #712cf9;
-            --bd-violet-rgb: 112.520718, 44.062154, 249.437846;
-            --bs-btn-font-weight: 600;
-            --bs-btn-color: var(--bs-white);
-            --bs-btn-bg: var(--bd-violet-bg);
-            --bs-btn-border-color: var(--bd-violet-bg);
-            --bs-btn-hover-color: var(--bs-white);
-            --bs-btn-hover-bg: #6528e0;
-            --bs-btn-hover-border-color: #6528e0;
-            --bs-btn-focus-shadow-rgb: var(--bd-violet-rgb);
-            --bs-btn-active-color: var(--bs-btn-hover-color);
-            --bs-btn-active-bg: #5a23c8;
-            --bs-btn-active-border-color: #5a23c8
+        .brand-mark {
+            width: 72px;
+            height: 72px;
+            padding: 0.6rem;
+            background: #fff;
+            border-radius: 1.1rem;
+            box-shadow: 0 1rem 2rem rgba(6, 58, 122, 0.18);
         }
 
-        .bd-mode-toggle {
-            z-index: 1500
+        .login-form-panel {
+            padding: 3rem 2.25rem;
+            background: rgba(255, 255, 255, 0.96);
         }
 
-        .bd-mode-toggle .bi {
-            width: 1em;
-            height: 1em
+        .form-signin {
+            max-width: none;
+            padding: 0;
         }
 
-        .bd-mode-toggle .dropdown-menu .active .bi {
-            display: block !important
+        .form-signin .form-floating {
+            margin-bottom: 0.85rem;
+        }
+
+        .form-signin .form-control {
+            min-height: 3.35rem;
+            border-color: #d7e6f5;
+            border-radius: 0.85rem;
+        }
+
+        .form-signin .form-control:focus {
+            border-color: rgba(11, 94, 215, 0.45);
+            box-shadow: 0 0 0 0.2rem rgba(11, 94, 215, 0.13);
+        }
+
+        .login-page .text-primary {
+            color: #0b5ed7 !important;
+        }
+
+        .login-page .btn-primary {
+            background-color: #0b5ed7 !important;
+            border-color: #0b5ed7 !important;
+        }
+
+        .login-page .btn-primary:hover,
+        .login-page .btn-primary:focus {
+            background-color: #084db3 !important;
+            border-color: #084db3 !important;
+        }
+
+        .login-page .form-check-input:checked {
+            background-color: #0b5ed7;
+            border-color: #0b5ed7;
+        }
+
+        .login-button {
+            border-radius: 0.85rem;
+            font-weight: 700;
+        }
+
+        .login-copy {
+            max-width: 22rem;
+            color: rgba(255, 255, 255, 0.82);
+        }
+
+        @media (max-width: 767.98px) {
+            .login-card {
+                display: block;
+                border-radius: 1rem;
+            }
+
+            .login-hero {
+                min-height: 220px;
+                padding: 2rem;
+                background-size: 10rem;
+            }
+
+            .login-form-panel {
+                padding: 2rem 1.4rem;
+            }
         }
     </style>
 </head>
 
-<body class="d-flex align-items-center py-4 bg-body-tertiary"> <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
-        <symbol id="check2" viewBox="0 0 16 16">
-            <path
-                d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z">
-            </path>
-        </symbol>
-        <symbol id="circle-half" viewBox="0 0 16 16">
-            <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"></path>
-        </symbol>
-        <symbol id="moon-stars-fill" viewBox="0 0 16 16">
-            <path
-                d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z">
-            </path>
-            <path
-                d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.734 1.734 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.734 1.734 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.734 1.734 0 0 0 1.097-1.097l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z">
-            </path>
-        </symbol>
-        <symbol id="sun-fill" viewBox="0 0 16 16">
-            <path
-                d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z">
-            </path>
-        </symbol>
-    </svg>
-    <div class="dropdown position-fixed bottom-0 end-0 mb-3 me-3 bd-mode-toggle"> <button
-            class="btn btn-bd-primary py-2 dropdown-toggle d-flex align-items-center" id="bd-theme" type="button"
-            aria-expanded="false" data-bs-toggle="dropdown" aria-label="Toggle theme (auto)"> <svg
-                class="bi my-1 theme-icon-active" aria-hidden="true">
-                <use href="#circle-half"></use>
-            </svg> <span class="visually-hidden" id="bd-theme-text">Toggle theme</span> </button>
-        <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="bd-theme-text">
-            <li> <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light"
-                    aria-pressed="false"> <svg class="bi me-2 opacity-50" aria-hidden="true">
-                        <use href="#sun-fill"></use>
-                    </svg>
-                    Light
-                    <svg class="bi ms-auto d-none" aria-hidden="true">
-                        <use href="#check2"></use>
-                    </svg> </button> </li>
-            <li> <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark"
-                    aria-pressed="false"> <svg class="bi me-2 opacity-50" aria-hidden="true">
-                        <use href="#moon-stars-fill"></use>
-                    </svg>
-                    Dark
-                    <svg class="bi ms-auto d-none" aria-hidden="true">
-                        <use href="#check2"></use>
-                    </svg> </button> </li>
-            <li> <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="auto"
-                    aria-pressed="true"> <svg class="bi me-2 opacity-50" aria-hidden="true">
-                        <use href="#circle-half"></use>
-                    </svg>
-                    Auto
-                    <svg class="bi ms-auto d-none" aria-hidden="true">
-                        <use href="#check2"></use>
-                    </svg> </button> </li>
-        </ul>
-    </div>
-    <main class="form-signin w-100 m-auto">
-        <form class="needs-validation " novalidate action="validate/validate_login.php" method="post"> <img class="mb-4"
-                src="assets/brand/logo.png" alt="" width="72" height="57">
-            <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
-            <div class="form-floating">
-                <input name="username" type="text" class="form-control" id="floatingInput" placeholder="sakinakantin"
-                    required> <label for="floatingInput">ID Pegawai</label>
-                <div class="invalid-feedback">
-                    ID Salah
+<body class="login-page d-flex align-items-center justify-content-center py-4">
+    <main class="login-shell">
+        <div class="login-card">
+            <section class="login-hero d-flex flex-column justify-content-between">
+                <div>
+                    <img class="brand-mark mb-4" src="assets/brand/carwash-logo.svg" alt="Carwash">
+                    <h1 class="display-6 fw-bold mb-3">Carwash</h1>
+                    <p class="login-copy mb-0">Kelola transaksi, pelanggan, dan laporan pencucian kendaraan dari satu tempat.</p>
                 </div>
-            </div>
-            <div class="form-floating">
-                <input name="password" type="password" class="form-control" id="floatingPassword" placeholder="Password"
-                    required> <label for="floatingPassword">Password</label>
-                <div class="invalid-feedback">
-                    Pass Salah
-                </div>
-            </div>
-            <div class="form-check text-start my-3"> <input class="form-check-input" type="checkbox" value="remember-me"
-                    id="checkDefault"> <label class="form-check-label" for="checkDefault">
-                    Remember me
-                </label> </div> <button class="btn btn-primary w-100 py-2" type="submit" name="submit_validate"
-                value="isi">Sign
-                in</button>
+                <p class="mb-0 small text-white-50">Aplikasi operasional carwash</p>
+            </section>
 
-            <p class="mt-5 mb-3 text-body-secondary">&copy; 2017–2025</p>
-        </form>
+            <section class="login-form-panel">
+                <form class="form-signin needs-validation" novalidate action="validate/validate_login.php" method="post">
+                    <img class="brand-mark d-md-none mb-4" src="assets/brand/carwash-logo.svg" alt="Carwash">
+                    <p class="text-primary fw-bold mb-2">Selamat datang</p>
+                    <h2 class="h3 mb-2 fw-bold">Masuk ke Carwash</h2>
+                    <p class="text-body-secondary mb-4">Gunakan akun pegawai untuk melanjutkan.</p>
+
+                    <div class="form-floating">
+                        <input name="username" type="text" class="form-control" id="floatingInput" placeholder="ID Pegawai" required>
+                        <label for="floatingInput">ID Pegawai</label>
+                        <div class="invalid-feedback">
+                            ID pegawai wajib diisi.
+                        </div>
+                    </div>
+
+                    <div class="form-floating">
+                        <input name="password" type="password" class="form-control" id="floatingPassword" placeholder="Password" required>
+                        <label for="floatingPassword">Password</label>
+                        <div class="invalid-feedback">
+                            Password wajib diisi.
+                        </div>
+                    </div>
+
+                    <div class="form-check text-start my-3">
+                        <input class="form-check-input" type="checkbox" value="remember-me" id="checkDefault">
+                        <label class="form-check-label" for="checkDefault">Ingat saya</label>
+                    </div>
+
+                    <button class="btn btn-primary login-button w-100 py-2" type="submit" name="submit_validate" value="isi">
+                        Masuk
+                    </button>
+
+                    <p class="mt-5 mb-0 text-body-secondary small">&copy; <?php echo date('Y'); ?> Carwash</p>
+                </form>
+            </section>
+        </div>
     </main>
-    <script src="assets/dist/js/bootstrap.bundle.min.js" class="astro-vvvwv3sm"></script>
 
+    <script src="assets/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         (() => {
-            'use strict'
+            'use strict';
 
-            // Fetch all the forms we want to apply custom Bootstrap validation styles to
-            const forms = document.querySelectorAll('.needs-validation')
+            const forms = document.querySelectorAll('.needs-validation');
 
-            // Loop over them and prevent submission
             Array.from(forms).forEach(form => {
                 form.addEventListener('submit', event => {
                     if (!form.checkValidity()) {
-                        event.preventDefault()
-                        event.stopPropagation()
+                        event.preventDefault();
+                        event.stopPropagation();
                     }
 
-                    form.classList.add('was-validated')
-                }, false)
-            })
-        })()
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
     </script>
 </body>
 
 </html>
-<?php include 'footerJS.php'; ?>

@@ -1,39 +1,65 @@
 <?php
 include "Database/connect.php";
 
-$query = mysqli_query($conn, "SELECT *, SUM(((harga+pajak)*0.11)*jumlah) as ppn_pajak, SUM(((harga+pajak)+((harga+pajak)*0.11))*jumlah) AS harganya,SUM((harga+pajak)*jumlah) AS harganyanon,((harga+pajak)+((harga+pajak)*0.11)) AS harga_jual,sum(harga*jumlah) AS harganya_toko from tb_list_order
-LEFT JOIN tb_order ON tb_order.id_order = tb_list_order.kode_order
-LEFT JOIN tb_menu ON tb_menu.id = tb_list_order.menu
-LEFT JOIN tb_kategori_menu ON tb_kategori_menu.id_kategori = tb_menu.kategori
-LEFT JOIN tb_bayar ON tb_bayar.id_bayar = tb_list_order.kode_order
-GROUP BY tb_list_order.id_list_order
-HAVING tb_list_order.kode_order = $_GET[kode_order]");
-$kode = $_GET['kode_order'];
-$meja = $_GET['meja'];
-$customer = $_GET['pelanggan'];
-$toko = $_GET['kios'];
+$kode = mysqli_real_escape_string($conn, $_GET['kode_order'] ?? '');
+$no_Kendaraan = $_GET['no_Kendaraan'] ?? '';
+$customer = $_GET['pelanggan'] ?? '';
 $diskon = $_GET['diskon'] ?? 0;
-$waktu_order = $GET['waktu_order'] ?? date('Y-m-d H:i:s');
-$set_menu = mysqli_query($conn, "SELECT tb_menu.id, tb_menu.nama, tb_kategori_menu.jenis_menu
-FROM tb_menu
-LEFT JOIN tb_kategori_menu ON tb_kategori_menu.id_kategori = tb_menu.kategori
-WHERE tb_menu.nama_toko = '$toko' AND tb_menu.status = 1");
-$query2 = mysqli_query($conn, "select * from tb_kios");
-while ($record = mysqli_fetch_array($query)) {
-    $result[] = $record;
-    // $kode = $record['id_order'];
-    // $meja = $record['meja'];
-    // $customer = $record['pelanggan'];
-    // $toko = $record['nama_toko'];
+$ukuran_Kendaraan = $_GET['ukuran_Kendaraan'] ?? $_GET['ukuran_K'] ?? '';
+$jenis_Kendaraan = $_GET['jenis_Kendaraan'] ?? $_GET['Jenis_K'] ?? '';
+$catatan = $_GET['catatan'] ?? '';
+$waktu_order = $_GET['waktu_order'] ?? date('Y-m-d H:i:s');
+$result = [];
+
+$query = mysqli_query($conn, "SELECT
+    tb_order.*,
+    tb_order.jenis_Kendaraan AS jenis_K,
+    tb_order.ukuran_Kendaraan AS ukuran_K,
+    user.username,
+    tb_list_order.*,
+    tb_list_order.tarif AS menu,
+    tb_tarif.nama_tarif AS nama,
+    tb_tarif.nama_tarif,
+    tb_tarif.keterangan_tarif,
+    (tb_tarif.bill_PT + tb_tarif.bill_Karyawan) AS harga_jual,
+    (tb_tarif.bill_PT + tb_tarif.bill_Karyawan) AS harga,
+    ((tb_tarif.bill_PT + tb_tarif.bill_Karyawan) * tb_list_order.jumlah) AS harganya,
+    (tb_tarif.bill_PT * tb_list_order.jumlah) AS harganya_pt,
+    (tb_tarif.bill_Karyawan * tb_list_order.jumlah) AS harganya_karyawan,
+    (tb_tarif.bill_Karyawan * tb_list_order.jumlah) AS harganya_toko,
+    0 AS ppn_pajak,
+    tb_bayar.id_bayar
+FROM tb_order
+LEFT JOIN user ON user.id = tb_order.kasir
+LEFT JOIN tb_list_order ON tb_list_order.kode_order = tb_order.id_order
+LEFT JOIN tb_tarif ON tb_tarif.id = tb_list_order.tarif
+LEFT JOIN tb_bayar ON tb_bayar.id_bayar = tb_order.id_order
+WHERE tb_order.id_order = '$kode'
+ORDER BY tb_list_order.id_list_order ASC");
+
+$jenis_Kendaraan_sql = mysqli_real_escape_string($conn, $jenis_Kendaraan);
+$ukuran_Kendaraan_sql = mysqli_real_escape_string($conn, $ukuran_Kendaraan);
+$set_menu = mysqli_query($conn, "SELECT tb_tarif.id, tb_tarif.nama_tarif AS nama, tb_tarif.nama_tarif
+FROM tb_tarif
+WHERE tb_tarif.jenis_Kendaraan = '$jenis_Kendaraan_sql'
+AND tb_tarif.ukuran_Kendaraan = '$ukuran_Kendaraan_sql'
+AND tb_tarif.status = 1");
+$menu_options = [];
+if ($set_menu) {
+    while ($menu_record = mysqli_fetch_array($set_menu, MYSQLI_ASSOC)) {
+        $menu_options[] = $menu_record;
+    }
 }
 
-// var_dump($result);
-// exit(); 
-while ($record2 = mysqli_fetch_array($query2)) {
-    $result2[] = $record2;
+if (!$query) {
+    die("Query Error: " . mysqli_error($conn));
 }
 
-
+while ($record = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
+    if (!empty($record['id_list_order'])) {
+        $result[] = $record;
+    }
+}
 ?>
 
 <!-- Conten -->
@@ -55,9 +81,9 @@ while ($record2 = mysqli_fetch_array($query2)) {
                 </div>
                 <div class="col-lg-2">
                     <div class="form-floating ">
-                        <input disabled type="text" class="form-control" id="meja"
-                            value="<?php echo $meja ?>" name="meja">
-                        <label for="floatingInputGambar">Nomor Meja</label>
+                        <input disabled type="text" class="form-control" id="no_Kendaraan"
+                            value="<?php echo $no_Kendaraan ?>" name="no_Kendaraan">
+                        <label for="floatingInputGambar">Nomor Kendaraan</label>
                     </div>
                 </div>
                 <div class="col-lg-3">
@@ -70,8 +96,8 @@ while ($record2 = mysqli_fetch_array($query2)) {
                 <div class="col-lg-4">
                     <div class="form-floating ">
                         <input disabled type="text" class="form-control" id="toko"
-                            value="<?php echo $toko ?>" name="toko">
-                        <label for="floatingInputGambar">Nama Kios</label>
+                            value="<?php echo $catatan ?>" name="catatan">
+                        <label for="floatingInputGambar">catatan</label>
                     </div>
                 </div>
             </div>
@@ -234,9 +260,9 @@ while ($record2 = mysqli_fetch_array($query2)) {
                                 }
                             }
                         ?>
-                            <button class="<?php echo (!empty($row['id_bayar'])) ? "btn btn-secondary disabled" : "btn btn-primary"; ?>" data-bs-toggle="modal" data-bs-target="#tambahItem"><i class="bi bi-plus-square-dotted"></i> Item</button>
-                            <button class="<?php echo (!empty($row['id_bayar'])) ? "btn btn-secondary disabled" : "btn btn-info"; ?>" data-bs-toggle="modal" data-bs-target="#tambahAddon"><i class="bi bi-plus-square-dotted"></i> Addon</button>
-                            <button class="<?php echo (!empty($row['id_bayar'])) ? "btn btn-secondary disabled" : "btn btn-success"; ?>" data-bs-toggle="modal" data-bs-target="#bayar"><i class="bi bi-cash-coin"></i> Bayar</button>
+                            <button class="<?php echo $sudah_bayar ? "btn btn-secondary disabled" : "btn btn-primary"; ?>" data-bs-toggle="modal" data-bs-target="#tambahItem"><i class="bi bi-plus-square-dotted"></i> Item</button>
+                            <button class="<?php echo $sudah_bayar ? "btn btn-secondary disabled" : "btn btn-info"; ?>" data-bs-toggle="modal" data-bs-target="#tambahAddon"><i class="bi bi-plus-square-dotted"></i> Addon</button>
+                            <button class="<?php echo $sudah_bayar ? "btn btn-secondary disabled" : "btn btn-success"; ?>" data-bs-toggle="modal" data-bs-target="#bayar"><i class="bi bi-cash-coin"></i> Bayar</button>
                             <button class="btn btn-info<?php echo $sudah_bayar ? '' : ' disabled'; ?>" onclick="if(<?php echo $sudah_bayar ? 'true' : 'false'; ?>) printStruk()"><i class="bi bi-printer"></i> Print Struk</button>
                         <?php
                         }
@@ -319,15 +345,15 @@ while ($record2 = mysqli_fetch_array($query2)) {
         </style>
 
         <div id="struk_body" class="container">
-            <h2 class="text-center">Kantin Sakina</h2>
+            <h2 class="text-center">Carwash Demo</h2>
             <h2 class="text-center">Struk Pembayaran</h2>
 
             <div class="separator"></div>
 
             <div>Waktu Order: <?php echo $waktu_order ?></div>
             <div>Kode Order: <?php echo $kode; ?></div>
-            <div>Meja: <?php echo $meja; ?> / Pelanggan: <?php echo $customer; ?></div>
-            <div>Kios: <?php echo $toko; ?></div>
+            <div>No Kendaraan: <?php echo $no_Kendaraan; ?> / Pelanggan: <?php echo $customer; ?></div>
+            <div>Catatan: <?php echo $catatan; ?></div>
 
             <div class="separator"></div>
 

@@ -11,9 +11,11 @@
                         <form class="needs-validation" novalidate action="validate/validate_order_item.php"
                               method="post">
                               <input type="hidden" name="kode_order" value="<?php echo $kode ?>">
-                              <input type="hidden" name="meja" value="<?php echo $meja ?>">
+                              <input type="hidden" name="no_Kendaraan" value="<?php echo $no_Kendaraan ?>">
                               <input type="hidden" name="pelanggan" value="<?php echo $customer ?>">
-                              <input type="hidden" name="kios" value="<?php echo $toko ?>">
+                              <input type="hidden" name="catatan" value="<?php echo $catatan ?>">
+                              <input type="hidden" name="jenis_Kendaraan" value="<?php echo $jenis_Kendaraan ?>">
+                              <input type="hidden" name="ukuran_Kendaraan" value="<?php echo $ukuran_Kendaraan ?>">
                               <div class="row mt-3">
                                     <div class="col-lg-6">
                                           <div class="form-floating mb-3">
@@ -21,7 +23,7 @@
                                                       data-placeholder="Pilih Menu" style="width:100%">
                                                       <option value=""></option>
                                                       <?php
-                                                      foreach ($set_menu as $value) {
+                                                      foreach ($menu_options as $value) {
                                                       ?>
                                                             <option value="<?php echo $value['id'] ?>">
                                                                   <?php echo $value['nama'] ?>
@@ -110,9 +112,11 @@
                         <form class="needs-validation" novalidate action="validate/validate_order_item.php"
                               method="post">
                               <input type="hidden" name="kode_order" value="<?php echo $kode ?>">
-                              <input type="hidden" name="meja" value="<?php echo $meja ?>">
+                              <input type="hidden" name="no_Kendaraan" value="<?php echo $no_Kendaraan ?>">
                               <input type="hidden" name="pelanggan" value="<?php echo $customer ?>">
-                              <input type="hidden" name="kios" value="<?php echo $toko ?>">
+                              <input type="hidden" name="catatan" value="<?php echo $catatan ?>">
+                              <input type="hidden" name="jenis_Kendaraan" value="<?php echo $jenis_Kendaraan ?>">
+                              <input type="hidden" name="ukuran_Kendaraan" value="<?php echo $ukuran_Kendaraan ?>">
                               <div class="row mt-3">
                                     <div class="col-lg-6">
                                           <div class="form-floating mb-3">
@@ -120,14 +124,12 @@
                                                       data-placeholder="Pilih Menu" style="width:100%">
                                                       <option value=""></option>
                                                       <?php
-                                                      foreach ($set_menu as $value) {
-                                                            if (isset($value['jenis_menu']) && (int) $value['jenis_menu'] === 3) {
+                                                      foreach ($menu_options as $value) {
                                                       ?>
                                                                   <option value="<?php echo $value['id'] ?>">
                                                                         <?php echo $value['nama'] ?>
                                                                   </option>
                                                       <?php
-                                                            }
                                                       }
                                                       ?>
                                                 </select>
@@ -216,16 +218,18 @@ if (empty($result)) {
                                           method="post">
                                           <input type="hidden" name="id_list_order" value="<?php echo $row['id_list_order'] ?>">
                                           <input type="hidden" name="kode_order" value="<?php echo $kode ?>">
-                                          <input type="hidden" name="meja" value="<?php echo $meja ?>">
+                                          <input type="hidden" name="no_Kendaraan" value="<?php echo $no_Kendaraan ?>">
                                           <input type="hidden" name="pelanggan" value="<?php echo $customer ?>">
-                                          <input type="hidden" name="kios" value="<?php echo $toko ?>">
+                                          <input type="hidden" name="catatan" value="<?php echo $catatan ?>">
+                                          <input type="hidden" name="jenis_Kendaraan" value="<?php echo $jenis_Kendaraan ?>">
+                                          <input type="hidden" name="ukuran_Kendaraan" value="<?php echo $ukuran_Kendaraan ?>">
                                           <div class="row mt-3">
                                                 <div class="col-lg-6">
                                                       <div class="form-floating mb-3">
                                                             <select class="form-select" name="menu" id="">
                                                                   <option selected hidden value="">Pilih Menu</option>
                                                                   <?php
-                                                                  foreach ($set_menu as $value) {
+                                                                  foreach ($menu_options as $value) {
                                                                         if ($row['menu'] == $value['id']) {
                                                                               echo "<option selected value='" . $value['id'] . "'>" . $value['nama'] . "</option>";
                                                                         } else {
@@ -292,9 +296,11 @@ if (empty($result)) {
                                     <form action="validate/validate_delete_order_item.php" method="post">
                                           <input type="hidden" name="id_list_order" value="<?php echo $row['id_list_order'] ?>">
                                           <input type="hidden" name="kode_order" value="<?php echo $kode ?>">
-                                          <input type="hidden" name="meja" value="<?php echo $meja ?>">
+                                          <input type="hidden" name="no_Kendaraan" value="<?php echo $no_Kendaraan ?>">
                                           <input type="hidden" name="pelanggan" value="<?php echo $customer ?>">
-                                          <input type="hidden" name="kios" value="<?php echo $toko ?>">
+                                          <input type="hidden" name="catatan" value="<?php echo $catatan ?>">
+                                          <input type="hidden" name="jenis_Kendaraan" value="<?php echo $jenis_Kendaraan ?>">
+                                          <input type="hidden" name="ukuran_Kendaraan" value="<?php echo $ukuran_Kendaraan ?>">
                                           <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary"
                                                       data-bs-dismiss="modal">Batal</button>
@@ -429,9 +435,11 @@ if (empty($result)) {
                               <span class="text-danger fs-h fw-semibold">Apakah anda yakin ingin melakukan pembayaran?</span>
                               <form class="needs-validation" novalidate action="validate/validate_bayar.php" method="post">
                                     <input type="hidden" name="kode_order" value="<?php echo $kode ?>">
-                                    <input type="hidden" name="meja" value="<?php echo $meja ?>">
+                                    <input type="hidden" name="no_Kendaraan" value="<?php echo $no_Kendaraan ?>">
                                     <input type="hidden" name="pelanggan" value="<?php echo $customer ?>">
-                                    <input type="hidden" name="kios" value="<?php echo $toko ?>">
+                                    <input type="hidden" name="catatan" value="<?php echo $catatan ?>">
+                                    <input type="hidden" name="jenis_Kendaraan" value="<?php echo $jenis_Kendaraan ?>">
+                                    <input type="hidden" name="ukuran_Kendaraan" value="<?php echo $ukuran_Kendaraan ?>">
                                     <input type="hidden" name="total_bayar" value="<?php echo $total ?>">
                                     <input type="hidden" name="grand_total" value="<?php echo $grand_total ?>">
                                     <input type="hidden" name="diskon" value="<?php echo $diskon_nominal ?>">

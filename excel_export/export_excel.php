@@ -25,7 +25,7 @@ $where_parts = [];
 
 // 1. Filter Kios
 if (!empty($kios_filter_esc) && $kios_filter_esc != 'all') {
-    $where_parts[] = "tb_order.nama_kios = '$kios_filter_esc'";
+    $where_parts[] = "tb_order.jenis_Kendaraan = '$kios_filter_esc'";
 }
 
 // 2. Filter Tanggal
@@ -46,16 +46,11 @@ if (!empty($where_parts)) {
 }
 
 // 2. Query Data dari Database (Disamakan dengan laporan.php)
-// Catatan: Query di laporan.php tidak memerlukan join ke tabel 'user' karena tidak menampilkan nama kasir.
-// Jika Anda ingin nama kasir, kolom 'kasir' di tb_order harus berisi ID user.
 $query_string = "SELECT 
                         tb_order.*, 
-                        tb_bayar.id_bayar, tb_bayar.jumlah_bayar, tb_bayar.diskon, tb_bayar.nominal_toko, tb_bayar.nominal_rs,
-                        -- Join ke user hanya untuk mendapatkan nama kasir (username). Asumsikan tb_order.kasir = user.id
-                        user.username 
+                        tb_bayar.id_bayar, tb_bayar.jumlah_bayar, tb_bayar.diskon, tb_bayar.nominal_pt, tb_bayar.nominal_karyawan 
                     FROM tb_order
                     LEFT JOIN tb_bayar ON tb_bayar.id_bayar = tb_order.id_order
-                    LEFT JOIN user ON user.id = tb_order.kasir
                     $where_clause
                     GROUP BY tb_order.id_order 
                     ORDER BY tb_order.waktu_order DESC";
@@ -67,14 +62,14 @@ if (!$result) {
 }
 
 // Hitung total penjualan
-$total_toko = 0;
-$total_rs = 0;
+$total_karyawan = 0;
+$total_pt = 0;
 $total_diskon = 0;
 $total_bayar = 0;
 $data = [];
 while ($row = $result->fetch_assoc()) {
-    $total_toko += $row['nominal_toko'] ?? 0;
-    $total_rs += $row['nominal_rs'] ?? 0;
+    $total_karyawan += $row['nominal_karyawan'] ?? 0;
+    $total_pt += $row['nominal_pt'] ?? 0;
     $total_diskon += $row['diskon'] ?? 0;
     $total_bayar += $row['jumlah_bayar'] ?? 0; // Total Bayar Final (setelah diskon)
     $data[] = $row;
@@ -85,11 +80,11 @@ $spreadsheet = new Spreadsheet();
 $sheet = $spreadsheet->getActiveSheet();
 $sheet->setTitle('Laporan Pembayaran Detail');
 
-// Tentukan Nama Kolom Terakhir (L)
-$last_col = 'L';
+// Tentukan Nama Kolom Terakhir (K)
+$last_col = 'K';
 
-// Tentukan Nama Toko untuk Judul Laporan dan Nama File
-$nama_toko_judul = ($kios_filter && $kios_filter != 'all') ? strtoupper($kios_filter) : 'SEMUA TOKO';
+// Tentukan Jenis Kendaraan untuk Judul Laporan dan Nama File
+$jenis_kendaraan_judul = ($kios_filter && $kios_filter != 'all') ? strtoupper($kios_filter) : 'SEMUA JENIS KENDARAAN';
 
 // 1. JUDUL LAPORAN (Baris 1 & 2)
 $sheet->mergeCells('A1:' . $last_col . '1');
@@ -107,7 +102,7 @@ if (!empty($start_date) && !empty($end_date)) {
 } else if (!empty($end_date)) {
     $tanggal_info_judul = " | SAMPAI TANGGAL: " . $end_date;
 }
-$sheet->setCellValue('A2', 'TOKO: ' . $nama_toko_judul . $tanggal_info_judul);
+$sheet->setCellValue('A2', 'JENIS KENDARAAN: ' . $jenis_kendaraan_judul . $tanggal_info_judul);
 $sheet->getStyle('A2')->getFont()->setSize(14)->setBold(true);
 $sheet->getStyle('A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
@@ -144,15 +139,14 @@ $sheet->getStyle('A' . $header_row . ':' . $last_col . $header_row)->applyFromAr
 $sheet->setCellValue('A' . $header_row, 'No');
 $sheet->setCellValue('B' . $header_row, 'Kode Order');
 $sheet->setCellValue('C' . $header_row, 'Pelanggan');
-$sheet->setCellValue('D' . $header_row, 'Meja');
+$sheet->setCellValue('D' . $header_row, 'No Kendaraan');
 $sheet->setCellValue('E' . $header_row, 'Pendapatan Toko');
 $sheet->setCellValue('F' . $header_row, 'Pendapatan Sakina Food Court');
 $sheet->setCellValue('G' . $header_row, 'Total Bayar');
 $sheet->setCellValue('H' . $header_row, 'Status'); // Kolom Status
 $sheet->setCellValue('I' . $header_row, 'Diskon');
 $sheet->setCellValue('J' . $header_row, 'Waktu Order');
-$sheet->setCellValue('K' . $header_row, 'Nama Toko');
-$sheet->setCellValue('L' . $header_row, 'Kasir'); // Tambahkan kolom Kasir (meski di laporan.php tidak ada, ini data penting)
+$sheet->setCellValue('K' . $header_row, 'Jenis Kendaraan');
 
 // 3. DATA ROWS (Mulai Baris 5)
 $rowNum = $data_start_row;
@@ -181,15 +175,14 @@ foreach ($data as $row) {
     $sheet->setCellValue('A' . $rowNum, $id_nomor++);
     $sheet->setCellValue('B' . $rowNum, $row['id_order']);
     $sheet->setCellValue('C' . $rowNum, $row['pelanggan']);
-    $sheet->setCellValue('D' . $rowNum, $row['meja']);
-    $sheet->setCellValue('E' . $rowNum, $row['nominal_toko'] ?? 0); // Pendapatan Toko
-    $sheet->setCellValue('F' . $rowNum, $row['nominal_rs'] ?? 0);   // Pendapatan Sakina Food Court
+    $sheet->setCellValue('D' . $rowNum, $row['no_Kendaraan']);
+    $sheet->setCellValue('E' . $rowNum, $row['nominal_pt'] ?? 0);        // Pendapatan Toko
+    $sheet->setCellValue('F' . $rowNum, $row['nominal_karyawan'] ?? 0);  // Pendapatan Sakina Food Court
     $sheet->setCellValue('G' . $rowNum, $row['jumlah_bayar'] ?? 0); // Total Bayar
     $sheet->setCellValue('H' . $rowNum, $status);                   // Status
     $sheet->setCellValue('I' . $rowNum, $row['diskon'] ?? 0);       // Diskon
     $sheet->setCellValue('J' . $rowNum, $row['waktu_order']);      // Waktu Order
-    $sheet->setCellValue('K' . $rowNum, $row['nama_kios']);        // Nama Toko
-    $sheet->setCellValue('L' . $rowNum, $row['username']);         // Kasir (dari join ke user)
+    $sheet->setCellValue('K' . $rowNum, $row['jenis_Kendaraan']);  // Jenis Kendaraan
     
     // Terapkan border dan alignment untuk baris data
     $sheet->getStyle('A' . $rowNum . ':' . $last_col . $rowNum)->applyFromArray($dataStyle);
@@ -200,16 +193,16 @@ foreach ($data as $row) {
     $sheet->getStyle('G' . $rowNum)->getNumberFormat()->setFormatCode('"Rp "#,##0');
     $sheet->getStyle('I' . $rowNum)->getNumberFormat()->setFormatCode('"Rp "#,##0');
     
-    // Rata kiri untuk teks (Kolom C, K, L)
+    // Rata kiri untuk teks (Kolom C, D, K)
     $sheet->getStyle('C' . $rowNum)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+    $sheet->getStyle('D' . $rowNum)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
     $sheet->getStyle('K' . $rowNum)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
-    $sheet->getStyle('L' . $rowNum)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
 
     $rowNum++;
 }
 
 // 4. TOTAL ROW (Baris terakhir data + 1)
-$grand_total = $total_toko + $total_rs + $total_diskon; // Grand Total Kotor = Toko + RS + Diskon
+$grand_total = $total_karyawan + $total_pt + $total_diskon; // Grand Total Kotor = Karyawan + PT + Diskon
 
 // Styling untuk Baris Total 1 (Ringkasan Keuntungan)
 $totalRowStyle1 = [
@@ -239,8 +232,8 @@ $sheet->setCellValue('A' . $rowNum, 'TOTAL');
 $sheet->getStyle('A' . $rowNum)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
 // Nilai Total
-$sheet->setCellValue('E' . $rowNum, $total_toko);
-$sheet->setCellValue('F' . $rowNum, $total_rs);
+$sheet->setCellValue('E' . $rowNum, $total_pt);
+$sheet->setCellValue('F' . $rowNum, $total_karyawan);
 $sheet->setCellValue('G' . $rowNum, $total_bayar);
 $sheet->setCellValue('I' . $rowNum, $total_diskon);
 
@@ -277,7 +270,7 @@ $sheet->getStyle('A' . $rowNum . ':' . $last_col . $rowNum)->applyFromArray($tot
 
 // Gabungkan kolom A sampai D untuk teks 'Total Pendapatan'
 $sheet->mergeCells('A' . $rowNum . ':D' . $rowNum);
-$sheet->setCellValue('A' . $rowNum, 'GRAND TOTAL KOTOR (Toko + Food Court + Diskon)');
+$sheet->setCellValue('A' . $rowNum, 'GRAND TOTAL KOTOR (Karyawan + PT + Diskon)');
 $sheet->getStyle('A' . $rowNum)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
 
@@ -285,7 +278,7 @@ $sheet->getStyle('A' . $rowNum)->getAlignment()->setHorizontal(Alignment::HORIZO
 $sheet->setCellValue('E' . $rowNum, $grand_total);
 $sheet->getStyle('E' . $rowNum)->getNumberFormat()->setFormatCode('"Rp "#,##0'); // Format mata uang
 
-// Gabungkan kolom E sampai L untuk kolom Grand Total
+// Gabungkan kolom E sampai K untuk kolom Grand Total
 $sheet->mergeCells('E' . $rowNum . ':' . $last_col . $rowNum); 
 
 
@@ -299,11 +292,11 @@ foreach (range('A', $last_col) as $col) {
 // 1. Ambil Tanggal Hari Ini
 $tanggal_hari_ini = date('Y-m-d'); 
 
-// 2. Ambil Nama Toko (dibersihkan dari spasi/karakter khusus)
-$nama_toko_file = str_replace([' ', '/', '\\'], '-', $nama_toko_judul); 
+// 2. Ambil Jenis Kendaraan (dibersihkan dari spasi/karakter khusus)
+$jenis_kendaraan_file = str_replace([' ', '/', '\\'], '-', $jenis_kendaraan_judul); 
 
 // 3. Buat Nama File Akhir
-$filename = "laporan-detail-pembayaran-" . strtolower($nama_toko_file) . "-" . $tanggal_hari_ini . ".xlsx";
+$filename = "laporan-detail-pembayaran-" . strtolower($jenis_kendaraan_file) . "-" . $tanggal_hari_ini . ".xlsx";
 
 
 // Set header untuk download file excel

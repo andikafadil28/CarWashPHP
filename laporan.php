@@ -10,7 +10,7 @@ $where_clause = "";
 $query_string = "";
 
 // Ambil data kios untuk dropdown
-$query2 = mysqli_query($conn, "SELECT nama FROM tb_kios ORDER BY nama ASC");
+$query2 = mysqli_query($conn, "SELECT jenis_Kendaraan FROM tb_tarif ORDER BY jenis_Kendaraan ASC");
 $result2 = [];
 while ($record2 = mysqli_fetch_array($query2)) {
     $result2[] = $record2;
@@ -27,7 +27,7 @@ if (isset($_POST['filter'])) {
 
     // 1. Filter Kios
     if (!empty($kios_filter_esc) && $kios_filter_esc != 'all') {
-        $where_parts[] = "tb_order.nama_kios = '$kios_filter_esc'";
+        $where_parts[] = "tb_order.jenis_Kendaraan = '$kios_filter_esc'";
     }
 
     // 2. Filter Tanggal
@@ -50,7 +50,7 @@ if (isset($_POST['filter'])) {
     // Tentukan query string dengan klausa WHERE yang baru dibuat
     $query_string = "SELECT 
                         tb_order.*, 
-                        tb_bayar.id_bayar, tb_bayar.jumlah_bayar, tb_bayar.diskon, tb_bayar.nominal_toko, tb_bayar.nominal_rs 
+                        tb_bayar.id_bayar, tb_bayar.jumlah_bayar, tb_bayar.diskon, tb_bayar.nominal_pt, tb_bayar.nominal_karyawan 
                      FROM tb_order
                      LEFT JOIN tb_bayar ON tb_bayar.id_bayar = tb_order.id_order
                      -- LEFT JOIN tb_list_order ON tb_list_order.kode_order = tb_order.id_order -- Tidak diperlukan jika hanya mengambil data order & bayar
@@ -61,7 +61,7 @@ if (isset($_POST['filter'])) {
     // Query default (Semua data, disarankan ditambahi limit tanggal jika data sangat banyak)
     $query_string = "SELECT 
                         tb_order.*, 
-                        tb_bayar.id_bayar, tb_bayar.jumlah_bayar, tb_bayar.diskon, tb_bayar.nominal_toko, tb_bayar.nominal_rs 
+                        tb_bayar.id_bayar, tb_bayar.jumlah_bayar, tb_bayar.diskon, tb_bayar.nominal_pt, tb_bayar.nominal_karyawan 
                      FROM tb_order
                      LEFT JOIN tb_bayar ON tb_bayar.id_bayar = tb_order.id_order
                      GROUP BY tb_order.id_order 
@@ -103,7 +103,7 @@ while ($record = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
                             <select class="form-select" aria-label="Default select example" name="kios_filter">
                                 <option value="" <?php echo empty($kios_filter) ? 'selected' : ''; ?> hidden>Pilih Kios</option>
                                 <?php foreach ($result2 as $row2) { ?>
-                                    <option value="<?php echo htmlspecialchars($row2['nama']) ?>" <?php echo $kios_filter == $row2['nama'] ? 'selected' : ''; ?>><?php echo htmlspecialchars($row2['nama']) ?></option>
+                                    <option value="<?php echo htmlspecialchars($row2['jenis_Kendaraan']) ?>" <?php echo $kios_filter == $row2['jenis_Kendaraan'] ? 'selected' : ''; ?>><?php echo htmlspecialchars($row2['nama']) ?></option>
                                 <?php } ?>
                                 <option value="all" <?php echo $kios_filter == 'all' ? 'selected' : ''; ?>>Semua Kios</option>
                             </select>
@@ -154,14 +154,14 @@ while ($record = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
                                 <th scope="col">No</th>
                                 <th scope="col">Kode Order</th>
                                 <th scope="col">Pelanggan</th>
-                                <th scope="col">Meja</th>
+                                <th scope="col">no Kendaraan</th>
                                 <th scope="col">Pendapatan Toko</th>
                                 <th scope="col">Pendapatan Sakina Food Court</th>
                                 <th scope="col">Total Bayar</th>
                                 <th scope="col">Status</th>
                                 <th scope="col">Diskon</th>
                                 <th scope="col">Waktu Order</th>
-                                <th scope="col">Nama Toko</th>
+                                <th scope="col">Jenis Kendaraan</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -175,14 +175,14 @@ while ($record = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
                                     <th scope="row"><?php echo $id_nomor++ ?></th>
                                     <td><?php echo htmlspecialchars($row['id_order'] ?? '-') ?></td>
                                     <td><?php echo htmlspecialchars($row['pelanggan'] ?? '-') ?></td>
-                                    <td><?php echo htmlspecialchars($row['meja'] ?? '-') ?></td>
-                                    <td><?php echo number_format($row['nominal_toko'] ?? 0, 0, ',', '.') ?></td>
-                                    <td><?php echo number_format($row['nominal_rs'] ?? 0, 0, ',', '.') ?></td>
+                                    <td><?php echo htmlspecialchars($row['no_Kendaraan'] ?? '-') ?></td>
+                                    <td><?php echo number_format($row['nominal_pt'] ?? 0, 0, ',', '.') ?></td>
+                                    <td><?php echo number_format($row['nominal_karyawan'] ?? 0, 0, ',', '.') ?></td>
                                     <td><?php echo number_format($row['jumlah_bayar'] ?? 0, 0, ',', '.') ?></td>
                                     <td><?php echo $status_badge ?></td>
                                     <td><?php echo number_format($row['diskon'] ?? 0, 0, ',', '.') ?></td>
                                     <td><?php echo htmlspecialchars($row['waktu_order'] ?? '-') ?></td>
-                                    <td><?php echo htmlspecialchars($row['nama_kios'] ?? '-') ?></td>
+                                    <td><?php echo htmlspecialchars($row['jenis_Kendaraan'] ?? '-') ?></td>
                                 </tr>
                             <?php
                             }
@@ -205,18 +205,18 @@ while ($record = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
                             $total_diskon = 0;
 
                             foreach ($result as $row) {
-                                $total_toko += $row['nominal_toko'] ?? 0;
-                                $total_rs += $row['nominal_rs'] ?? 0;
+                                $total_toko += $row['nominal_karyawan'] ?? 0;
+                                $total_rs += $row['nominal_pt'] ?? 0;
                                 $total_diskon += $row['diskon'] ?? 0;
                             }
                             $grand_total = $total_toko + $total_rs + $total_diskon;
                             ?>
                             <tr>
-                                <td class="fw-bold w-75">Total Pendapatan Toko</td>
+                                <td class="fw-bold w-75">Total Pendapatan Karyawan</td>
                                 <td class="fw-bold w-25 text-end">Rp <?php echo number_format($total_toko, 0, ',', '.') ?></td>
                             </tr>
                             <tr>
-                                <td class="fw-bold">Total Pendapatan Sakina Food Court</td>
+                                <td class="fw-bold">Total Pendapatan PT</td>
                                 <td class="fw-bold text-end">Rp <?php echo number_format($total_rs, 0, ',', '.') ?></td>
                             </tr>
                             <tr>
@@ -224,7 +224,7 @@ while ($record = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
                                 <td class="fw-bold text-end">Rp <?php echo number_format($total_diskon, 0, ',', '.') ?></td>
                             </tr>
                             <tr class="table-success">
-                                <td class="fw-bolder">GRAND TOTAL KOTOR (Toko + Food Court + Diskon)</td>
+                                <td class="fw-bolder">GRAND TOTAL KOTOR (Karyawan + PT + Diskon)</td>
                                 <td class="fw-bolder text-end">Rp <?php echo number_format($grand_total, 0, ',', '.') ?></td>
                             </tr>
                         </tbody>

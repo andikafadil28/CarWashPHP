@@ -1,4 +1,21 @@
-<nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 shadow">
+<style>
+      .carwash-topbar {
+            background: #ffffff;
+            border-bottom: 1px solid #d7efff;
+            box-shadow: 0 10px 28px rgba(8, 66, 152, .08) !important;
+      }
+
+      .carwash-topbar .btn-link,
+      .carwash-topbar .nav-link {
+            color: #0b5ed7;
+      }
+
+      .carwash-topbar .img-profile {
+            object-fit: contain;
+      }
+</style>
+
+<nav class="navbar navbar-expand navbar-light topbar mb-4 shadow carwash-topbar">
 
       <!-- Sidebar Toggle (Topbar) -->
       <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
@@ -45,7 +62,7 @@
                         aria-haspopup="true" aria-expanded="false">
                         <span
                               class="mr-2 d-none d-lg-inline text-gray-600 small"><?php echo $hasil['username']; ?></span>
-                        <img class="img-profile rounded-circle" src="img/undraw_profile.svg">
+                        <img class="img-profile rounded-circle bg-primary p-1" src="assets/brand/carwash-logo.svg">
                   </a>
                   <!-- Dropdown - User Information -->
                   <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
