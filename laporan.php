@@ -99,13 +99,13 @@ while ($record = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
                             <input type="date" class="form-control" name="end_date" value="<?php echo htmlspecialchars($end_date); ?>">
                         </div>
                         <div class="col-md-3">
-                            <label for="kios_filter" class="form-label">Nama Kios</label>
+                            <label for="kios_filter" class="form-label">Motor/Mobil</label>
                             <select class="form-select" aria-label="Default select example" name="kios_filter">
-                                <option value="" <?php echo empty($kios_filter) ? 'selected' : ''; ?> hidden>Pilih Kios</option>
+                                <option value="" <?php echo empty($kios_filter) ? 'selected' : ''; ?> hidden>Pilih Jenis Kendaraan</option>
                                 <?php foreach ($result2 as $row2) { ?>
                                     <option value="<?php echo htmlspecialchars($row2['jenis_Kendaraan']) ?>" <?php echo $kios_filter == $row2['jenis_Kendaraan'] ? 'selected' : ''; ?>><?php echo htmlspecialchars($row2['nama']) ?></option>
                                 <?php } ?>
-                                <option value="all" <?php echo $kios_filter == 'all' ? 'selected' : ''; ?>>Semua Kios</option>
+                                <option value="all" <?php echo $kios_filter == 'all' ? 'selected' : ''; ?>>Semua Kendaraan</option>
                             </select>
                         </div>
                         <div class="col-md-3 d-flex align-items-end">
@@ -122,7 +122,7 @@ while ($record = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
                     <?php
                     // Tampilkan informasi filter yang sedang diterapkan
                     $info_filter = "Menampilkan data laporan";
-                    $kios_display = "Semua Kios";
+                    $kios_display = "Semua Jenis";
 
                     if (!empty($kios_filter) && $kios_filter != 'all') {
                         $kios_display = "**" . htmlspecialchars($kios_filter) . "**";
@@ -142,7 +142,7 @@ while ($record = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
                     } else if (isset($_POST['filter'])) {
                         $info_filter .= " untuk **Semua Waktu**";
                     } else {
-                        $info_filter = "Menampilkan data laporan **Semua Waktu dan Semua Kios** (default).";
+                        $info_filter = "Menampilkan data laporan **Semua Waktu dan Semua Jenis** (default).";
                     }
 
                     echo "<p class='alert alert-info'>$info_filter</p>";
@@ -155,8 +155,8 @@ while ($record = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
                                 <th scope="col">Kode Order</th>
                                 <th scope="col">Pelanggan</th>
                                 <th scope="col">no Kendaraan</th>
-                                <th scope="col">Pendapatan Toko</th>
-                                <th scope="col">Pendapatan Sakina Food Court</th>
+                                <th scope="col">Pendapatan PT</th>
+                                <th scope="col">Pendapatan Karyawan</th>
                                 <th scope="col">Total Bayar</th>
                                 <th scope="col">Status</th>
                                 <th scope="col">Diskon</th>
