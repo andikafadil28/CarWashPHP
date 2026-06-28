@@ -487,7 +487,7 @@ while ($record = mysqli_fetch_array($query)) {
                                     <th scope="col">Jenis Kendaraan</th>
                                     <th scope="col">Harga PT</th>
                                     <th scope="col">Harga Karyawan</th>
-                                    <th scope="col">Harga Jual</th>
+                                    <th scope="col">Total</th>
                                     <th scope="col">Status</th>
                                     <?php
                                     if ($_SESSION["level_kantin"] == 1) {
