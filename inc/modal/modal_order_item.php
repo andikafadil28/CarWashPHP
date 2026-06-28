@@ -43,9 +43,9 @@
                                           <div class="form-floating">
                                                 <input type="number" class="form-control" id="floatingJumlah"
                                                       placeholder="Masukan Jumlah" name="jumlah" required>
-                                                <label for="floatingJumlah">Jumlah Porsi</label>
+                                                <label for="floatingJumlah">Qty</label>
                                                 <div class="invalid-feedback">
-                                                      Jumlah tidak boleh kosong
+                                                      Qty tidak boleh kosong
                                                 </div>
                                           </div>
                                     </div>
@@ -126,9 +126,9 @@
                                                       <?php
                                                       foreach ($menu_options as $value) {
                                                       ?>
-                                                                  <option value="<?php echo $value['id'] ?>">
-                                                                        <?php echo $value['nama'] ?>
-                                                                  </option>
+                                                            <option value="<?php echo $value['id'] ?>">
+                                                                  <?php echo $value['nama'] ?>
+                                                            </option>
                                                       <?php
                                                       }
                                                       ?>

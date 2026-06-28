@@ -140,8 +140,8 @@ $sheet->setCellValue('A' . $header_row, 'No');
 $sheet->setCellValue('B' . $header_row, 'Kode Order');
 $sheet->setCellValue('C' . $header_row, 'Pelanggan');
 $sheet->setCellValue('D' . $header_row, 'No Kendaraan');
-$sheet->setCellValue('E' . $header_row, 'Pendapatan Toko');
-$sheet->setCellValue('F' . $header_row, 'Pendapatan Sakina Food Court');
+$sheet->setCellValue('E' . $header_row, 'Pendapatan Karyawan');
+$sheet->setCellValue('F' . $header_row, 'Pendapatan RS');
 $sheet->setCellValue('G' . $header_row, 'Total Bayar');
 $sheet->setCellValue('H' . $header_row, 'Status'); // Kolom Status
 $sheet->setCellValue('I' . $header_row, 'Diskon');
@@ -169,7 +169,7 @@ foreach ($data as $row) {
         $sheet->getStyle('A' . $rowNum . ':' . $last_col . $rowNum)
             ->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('F2F2F2');
     }
-    
+
     $status = !empty($row['id_bayar']) ? 'Dibayar' : 'Belum Dibayar';
 
     $sheet->setCellValue('A' . $rowNum, $id_nomor++);
@@ -183,7 +183,7 @@ foreach ($data as $row) {
     $sheet->setCellValue('I' . $rowNum, $row['diskon'] ?? 0);       // Diskon
     $sheet->setCellValue('J' . $rowNum, $row['waktu_order']);      // Waktu Order
     $sheet->setCellValue('K' . $rowNum, $row['jenis_Kendaraan']);  // Jenis Kendaraan
-    
+
     // Terapkan border dan alignment untuk baris data
     $sheet->getStyle('A' . $rowNum . ':' . $last_col . $rowNum)->applyFromArray($dataStyle);
 
@@ -192,7 +192,7 @@ foreach ($data as $row) {
     $sheet->getStyle('F' . $rowNum)->getNumberFormat()->setFormatCode('"Rp "#,##0');
     $sheet->getStyle('G' . $rowNum)->getNumberFormat()->setFormatCode('"Rp "#,##0');
     $sheet->getStyle('I' . $rowNum)->getNumberFormat()->setFormatCode('"Rp "#,##0');
-    
+
     // Rata kiri untuk teks (Kolom C, D, K)
     $sheet->getStyle('C' . $rowNum)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
     $sheet->getStyle('D' . $rowNum)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
@@ -279,7 +279,7 @@ $sheet->setCellValue('E' . $rowNum, $grand_total);
 $sheet->getStyle('E' . $rowNum)->getNumberFormat()->setFormatCode('"Rp "#,##0'); // Format mata uang
 
 // Gabungkan kolom E sampai K untuk kolom Grand Total
-$sheet->mergeCells('E' . $rowNum . ':' . $last_col . $rowNum); 
+$sheet->mergeCells('E' . $rowNum . ':' . $last_col . $rowNum);
 
 
 // 5. Set Lebar Kolom Otomatis
@@ -290,10 +290,10 @@ foreach (range('A', $last_col) as $col) {
 
 // --- Pengaturan Download File Excel ---
 // 1. Ambil Tanggal Hari Ini
-$tanggal_hari_ini = date('Y-m-d'); 
+$tanggal_hari_ini = date('Y-m-d');
 
 // 2. Ambil Jenis Kendaraan (dibersihkan dari spasi/karakter khusus)
-$jenis_kendaraan_file = str_replace([' ', '/', '\\'], '-', $jenis_kendaraan_judul); 
+$jenis_kendaraan_file = str_replace([' ', '/', '\\'], '-', $jenis_kendaraan_judul);
 
 // 3. Buat Nama File Akhir
 $filename = "laporan-detail-pembayaran-" . strtolower($jenis_kendaraan_file) . "-" . $tanggal_hari_ini . ".xlsx";
@@ -312,4 +312,3 @@ header('Pragma: public');
 $writer = new Xlsx($spreadsheet);
 $writer->save('php://output');
 exit;
-?>
