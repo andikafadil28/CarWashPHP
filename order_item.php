@@ -11,6 +11,16 @@ $catatan = $_GET['catatan'] ?? '';
 $waktu_order = $_GET['waktu_order'] ?? date('Y-m-d H:i:s');
 $result = [];
 
+$order_header = mysqli_query($conn, "SELECT * FROM tb_order WHERE id_order = '$kode' LIMIT 1");
+if ($order_header && $header = mysqli_fetch_array($order_header, MYSQLI_ASSOC)) {
+    $no_Kendaraan = $header['no_Kendaraan'] ?? $no_Kendaraan;
+    $customer = $header['pelanggan'] ?? $customer;
+    $ukuran_Kendaraan = $header['ukuran_Kendaraan'] ?? $ukuran_Kendaraan;
+    $jenis_Kendaraan = $header['jenis_Kendaraan'] ?? $jenis_Kendaraan;
+    $catatan = $header['catatan'] ?? $catatan;
+    $waktu_order = $header['waktu_order'] ?? $waktu_order;
+}
+
 $query = mysqli_query($conn, "SELECT
     tb_order.*,
     tb_order.jenis_Kendaraan AS jenis_K,
@@ -93,7 +103,24 @@ while ($record = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
                         <label for="floatingInputGambar">Pelanggan</label>
                     </div>
                 </div>
-                <div class="col-lg-4">
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-lg-3">
+                    <div class="form-floating ">
+                        <input disabled type="text" class="form-control" id="jenis_Kendaraan"
+                            value="<?php echo $jenis_Kendaraan ?>" name="jenis_Kendaraan">
+                        <label for="jenis_Kendaraan">Jenis Kendaraan</label>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-floating ">
+                        <input disabled type="text" class="form-control" id="ukuran_Kendaraan"
+                            value="<?php echo $ukuran_Kendaraan ?>" name="ukuran_Kendaraan">
+                        <label for="ukuran_Kendaraan">Ukuran Kendaraan</label>
+                    </div>
+                </div>
+                <div class="col-lg-6">
                     <div class="form-floating ">
                         <input disabled type="text" class="form-control" id="toko"
                             value="<?php echo $catatan ?>" name="catatan">
@@ -353,6 +380,8 @@ while ($record = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
             <div>Waktu Order: <?php echo $waktu_order ?></div>
             <div>Kode Order: <?php echo $kode; ?></div>
             <div>No Kendaraan: <?php echo $no_Kendaraan; ?> / Pelanggan: <?php echo $customer; ?></div>
+            <div>Jenis Kendaraan: <?php echo $jenis_Kendaraan; ?></div>
+            <div>Ukuran Kendaraan: <?php echo $ukuran_Kendaraan; ?></div>
             <div>Catatan: <?php echo $catatan; ?></div>
 
             <div class="separator"></div>
