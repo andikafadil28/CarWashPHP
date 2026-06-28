@@ -100,7 +100,7 @@ if (empty($result)) {
             <div class="modal-dialog modal-xl modal-fullscreen-md-down">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Tambah Makanan Dan Minuman</h1>
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit Order</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -117,10 +117,10 @@ if (empty($result)) {
                                 </div>
                                 <div class="col-lg-2">
                                     <div class="form-floating">
-                                        <input type="text" class="form-control" id="floatingmeja" placeholder="nomor meja" name="meja" value="<?php echo $row['meja'] ?>" required>
-                                        <label for="floatingmeja">Meja</label>
+                                        <input type="text" class="form-control" id="floatingNoKendaraan" placeholder="no kendaraan" name="no_Kendaraan" value="<?php echo $row['no_Kendaraan'] ?>" required>
+                                        <label for="floatingNoKendaraan">No Kendaraan</label>
                                         <div class="invalid-feedback">
-                                            Meja tidak boleh kosong
+                                            Nomor Kendaraan tidak boleh kosong
                                         </div>
                                     </div>
                                 </div>
@@ -135,33 +135,35 @@ if (empty($result)) {
                                 </div>
                                 <div class="col-lg-2">
                                     <div class="form-floating">
-                                        <select class="form-select" aria-label="Default select example" name="kios" required>
-                                            <option selected hidden value="<?php echo $row['nama_kios'] ?>"><?php echo $row['nama_kios'] ?></option>
-                                            <?php
-                                            foreach ($result2 as $row2) {
-                                                if ($row2['status'] == 1) {
-                                            ?>
-                                                    <option value="<?php echo $row2['nama'] ?>"><?php echo $row2['nama'] ?></option>
-                                            <?php
-                                                }
-                                            }
-                                            ?>
+                                        <select class="form-select" aria-label="Default select example" name="ukuran_Kendaraan" required>
+                                            <option value="Besar" <?php echo ($row['ukuran_K'] == 'Besar') ? 'selected' : ''; ?>>Besar</option>
+                                            <option value="Sedang" <?php echo ($row['ukuran_K'] == 'Sedang') ? 'selected' : ''; ?>>Sedang</option>
+                                            <option value="Kecil" <?php echo ($row['ukuran_K'] == 'Kecil') ? 'selected' : ''; ?>>Kecil</option>
                                         </select>
-                                        <label for="floatingKios">Kios</label>
+                                        <label for="floatingUkuran">Kategori Ukuran</label>
                                         <div class="invalid-feedback">
-                                            Kios tidak boleh kosong
+                                            Ukuran Kendaraan tidak boleh kosong
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="row mt-3">
-                                <div class="col-lg-12">
+                                <div class="col-lg-6">
                                     <div class="form-floating">
-                                        <input type="text" class="form-control" id="catatan" placeholder="Masukan Catatan Jika Ada" name="catatan" value="<?php echo $row['catatan'] ?>" required>
-                                        <label for="catatan">Catatan</label>
+                                        <select class="form-select" aria-label="Default select example" name="jenis_Kendaraan" required>
+                                            <option value="Mobil" <?php echo ($row['jenis_K'] == 'Mobil') ? 'selected' : ''; ?>>Mobil</option>
+                                            <option value="Motor" <?php echo ($row['jenis_K'] == 'Motor') ? 'selected' : ''; ?>>Motor</option>
+                                        </select>
+                                        <label for="floatingJenis">Kategori Kendaraan</label>
                                         <div class="invalid-feedback">
-                                            Catatan tidak boleh kosong
+                                            Jenis Kendaraan tidak boleh kosong
                                         </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" id="catatan" placeholder="Masukan Catatan Jika Ada" name="catatan" value="<?php echo $row['catatan'] ?>">
+                                        <label for="catatan">Catatan</label>
                                     </div>
                                 </div>
                             </div>
@@ -169,7 +171,7 @@ if (empty($result)) {
 
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary" name="input_order_edit">Buat Order</button>
+                                <button type="submit" class="btn btn-primary" name="input_order_edit">Update Order</button>
                             </div>
                         </form>
                     </div>

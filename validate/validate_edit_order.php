@@ -3,22 +3,20 @@ session_start();
 
 include("../Database/connect.php");
 $kodeorder = (isset($_POST["kode_order"])) ? htmlentities($_POST["kode_order"]) : "";
-$meja = (isset($_POST["meja"])) ? htmlentities($_POST["meja"]) : "";
+$no_Kendaraan = (isset($_POST["no_Kendaraan"])) ? htmlentities($_POST["no_Kendaraan"]) : "";
 $pelanggan = (isset($_POST["pelanggan"])) ? htmlentities($_POST["pelanggan"]) : "";
-$kios = (isset($_POST["kios"])) ? htmlentities($_POST["kios"]) : "";
+$ukuran_Kendaraan = (isset($_POST["ukuran_Kendaraan"])) ? htmlentities($_POST["ukuran_Kendaraan"]) : "";
+$jenis_Kendaraan = (isset($_POST["jenis_Kendaraan"])) ? htmlentities($_POST["jenis_Kendaraan"]) : "";
 $catatan = (isset($_POST["catatan"])) ? htmlentities($_POST["catatan"]) : "";
+$message = "";
 
 if (isset($_POST['input_order_edit'])) {
-        $select_query = mysqli_query($conn, "SELECT * FROM tb_order WHERE id_order = '$kodeorder'");
-        
-                $query = mysqli_query($conn, "UPDATE tb_order SET meja = '$meja', pelanggan = '$pelanggan', nama_kios = '$kios', catatan = '$catatan' WHERE id_order = '$kodeorder'");
-                if ($query) {
-                        $message =  '<script>alert("Order berhasil ditambahkan"); 
-                        window.location.href="../order";</script>';
-                } else {
-                        echo "<script>alert('Gagal menambahkan order'); window.location.href='../order';</script>";
-                }
-        
+        $query = mysqli_query($conn, "UPDATE tb_order SET pelanggan = '$pelanggan', jenis_Kendaraan = '$jenis_Kendaraan', ukuran_Kendaraan = '$ukuran_Kendaraan', no_Kendaraan = '$no_Kendaraan', catatan = '$catatan' WHERE id_order = '$kodeorder'");
+        if ($query) {
+                $message = '<script>alert("Order berhasil diupdate"); window.location.href="../order";</script>';
+        } else {
+                echo "<script>alert('Gagal mengupdate order'); window.location.href='../order';</script>";
+        }
 }
 echo $message;
 

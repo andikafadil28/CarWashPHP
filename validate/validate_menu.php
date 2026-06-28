@@ -47,12 +47,6 @@ if (isset($_POST['input_menu_proses'])) {
         exit();
     }
 
-    $select_query = mysqli_query($conn, "SELECT * FROM tb_tarif WHERE nama_tarif = '$nama_tarif'");
-    if (mysqli_num_rows($select_query) > 0) {
-        echo "<script>alert('Tarif sudah terdaftar'); window.location.href='../menu';</script>";
-        exit();
-    }
-
     // if ($hasPhoto) {
     //     if (!move_uploaded_file($_FILES["foto"]["tmp_name"], $target_file)) {
     //         echo "<script>alert('Gagal mengupload gambar'); window.location.href='../menu';</script>";
