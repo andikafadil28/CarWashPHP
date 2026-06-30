@@ -140,8 +140,8 @@ $sheet->setCellValue('A' . $header_row, 'No');
 $sheet->setCellValue('B' . $header_row, 'Kode Order');
 $sheet->setCellValue('C' . $header_row, 'Pelanggan');
 $sheet->setCellValue('D' . $header_row, 'No Kendaraan');
-$sheet->setCellValue('E' . $header_row, 'Pendapatan Karyawan');
-$sheet->setCellValue('F' . $header_row, 'Pendapatan RS');
+$sheet->setCellValue('E' . $header_row, 'Pendapatan PT');
+$sheet->setCellValue('F' . $header_row, 'Pendapatan Karyawan');
 $sheet->setCellValue('G' . $header_row, 'Total Bayar');
 $sheet->setCellValue('H' . $header_row, 'Status'); // Kolom Status
 $sheet->setCellValue('I' . $header_row, 'Diskon');
