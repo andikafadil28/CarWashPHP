@@ -31,13 +31,10 @@ $query = mysqli_query($conn, "SELECT
     tb_tarif.nama_tarif AS nama,
     tb_tarif.nama_tarif,
     tb_tarif.keterangan_tarif,
-    (tb_tarif.bill_PT + tb_tarif.bill_Karyawan) AS harga_jual,
-    (tb_tarif.bill_PT + tb_tarif.bill_Karyawan) AS harga,
-    ((tb_tarif.bill_PT + tb_tarif.bill_Karyawan) * tb_list_order.jumlah) AS harganya,
-    (tb_tarif.bill_PT * tb_list_order.jumlah) AS harganya_pt,
-    (tb_tarif.bill_Karyawan * tb_list_order.jumlah) AS harganya_karyawan,
-    (tb_tarif.bill_Karyawan * tb_list_order.jumlah) AS harganya_toko,
-    0 AS ppn_pajak,
+    tb_tarif.bill_Tarif,
+    tb_tarif.bill_PT,
+    tb_tarif.bill_Karyawan,
+    tb_tarif.bill_Operasional,
     tb_bayar.id_bayar
 FROM tb_order
 LEFT JOIN user ON user.id = tb_order.kasir
@@ -67,9 +64,28 @@ if (!$query) {
 
 while ($record = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
     if (!empty($record['id_list_order'])) {
+        $jumlahItem = (int) ($record['jumlah'] ?? 0);
+        $pembagian = carwash_resolve_tarif_breakdown($record);
+        $record['harga_jual'] = $pembagian['bill_tarif'];
+        $record['harga_jual_ppn'] = $pembagian['harga_jual'];
+        $record['harga'] = $pembagian['bill_tarif'];
+        $record['harganya'] = $pembagian['bill_tarif'] * $jumlahItem;
+        $record['harganya_ppn'] = $pembagian['harga_jual'] * $jumlahItem;
+        $record['harganya_pt'] = $pembagian['bill_pt'] * $jumlahItem;
+        $record['harganya_karyawan'] = $pembagian['bill_karyawan'] * $jumlahItem;
+        $record['harganya_operasional'] = $pembagian['bill_operasional'] * $jumlahItem;
+        $record['harganya_toko'] = $record['harganya_karyawan'];
+        $record['ppn_pajak'] = $pembagian['pajak'] * $jumlahItem;
+        $record['billing'] = $pembagian;
         $result[] = $record;
     }
 }
+
+$diskonInput = isset($_POST['diskon_nominal']) ? $_POST['diskon_nominal'] : $diskon;
+$diskonNominal = carwash_round_money($diskonInput);
+$ringkasanOrder = carwash_calculate_order_totals($result, $diskonNominal);
+$diskonNominal = $ringkasanOrder['diskon'];
+$pajakPersenLabel = carwash_get_config()['pajak_persen'] ?? 0;
 ?>
 
 <!-- Conten -->
@@ -210,17 +226,7 @@ while ($record = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
                                             Total Harga
                                         </td>
                                         <td class="fw-bold">
-                                            <?php
-                                            $total = 0;
-                                            foreach ($result as $row) {
-                                                if (isset($row['jenis_menu']) && (int)$row['jenis_menu'] === 3) {
-                                                    $total += $row['harganyanon'];
-                                                } else {
-                                                    $total += $row['harganya'];
-                                                }
-                                            }
-                                            echo number_format($total, 0, ',', '.');
-                                            ?>
+                                            <?php echo number_format($ringkasanOrder['subtotal_tarif'], 0, ',', '.'); ?>
                                         </td>
 
                                     </tr>
@@ -230,32 +236,16 @@ while ($record = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
                                             Grand Total
                                         </td>
                                         <td class="fw-bold">
-                                            <?php
-                                            // Ambil nilai diskon nominal dari input user jika ada, jika tidak pakai 0
-                                            $diskon_nominal = isset($_POST['diskon_nominal']) ? floatval($_POST['diskon_nominal']) : 0;
-                                            if ($diskon_nominal < 0) $diskon_nominal = 0;
-                                            if ($diskon_nominal > $total) $diskon_nominal = $total;
-
-
-                                            $grand_total = $total - $diskon_nominal;
-
-
-                                            ?>
                                             <form method="post" action="">
                                                 <div class="mb-2">
                                                     <label for="diskon_nominal" class="form-label">Diskon (Rp)</label>
-                                                    <input type="number" min="0" max="<?php echo $total; ?>" step="1" name="diskon_nominal" id="diskon_nominal" class="form-control form-control-sm d-inline-block" style="width:120px;" value="<?php echo htmlspecialchars($diskon_nominal + $diskon); ?>" onchange="this.form.submit()">
+                                                    <input type="number" min="0" max="<?php echo $ringkasanOrder['subtotal_tarif']; ?>" step="1" name="diskon_nominal" id="diskon_nominal" class="form-control form-control-sm d-inline-block" style="width:120px;" value="<?php echo htmlspecialchars($diskonNominal); ?>" onchange="this.form.submit()">
                                                 </div>
                                             </form>
-                                            <div>Diskon: -<?php echo number_format($diskon_nominal + $diskon, 0, ',', '.'); ?></div>
-                                            <!-- <div>Total Harga: <?php echo number_format($grand_total - $diskon, 0, ',', '.'); ?> </div> -->
-                                            <?php
-                                            $grand_total = $grand_total - $diskon;
-                                            // $ppn = $grand_total * 0.11;
-                                            // $grand_total += $ppn;
-                                            ?>
-                                            <!-- <div>PPN 11%: <?php echo number_format($ppn, 0, ',', '.'); ?></div> -->
-                                            <div class="fw-bold">Grand Total: <?php echo number_format($grand_total, 0, ',', '.'); ?></div>
+                                            <div>Diskon: -<?php echo number_format($ringkasanOrder['diskon'], 0, ',', '.'); ?></div>
+                                            <div>Total Harga: <?php echo number_format($ringkasanOrder['subtotal_setelah_diskon'], 0, ',', '.'); ?></div>
+                                            <div>PPN <?php echo $pajakPersenLabel; ?>%: <?php echo number_format($ringkasanOrder['subtotal_ppn'], 0, ',', '.'); ?></div>
+                                            <div class="fw-bold">Grand Total: <?php echo number_format($ringkasanOrder['grand_total'], 0, ',', '.'); ?></div>
 
                                         </td>
                                     </tr>
@@ -428,17 +418,18 @@ while ($record = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
             <div class="separator"></div>
 
             <div class="text-right">
-                <div>Diskon: -<?php echo number_format($diskon_nominal + $diskon, 0, ',', '.'); ?></div>
-                <div>Total: <?php echo number_format($total - $diskon, 0, ',', '.'); ?></div>
-                <!-- <div>PPN : <?php echo number_format($ppn, 0, ',', '.'); ?> </div> -->
+                <div>Subtotal: <?php echo number_format($ringkasanOrder['subtotal_tarif'], 0, ',', '.'); ?></div>
+                <div>Diskon: -<?php echo number_format($ringkasanOrder['diskon'], 0, ',', '.'); ?></div>
+                <div>Total Harga: <?php echo number_format($ringkasanOrder['subtotal_setelah_diskon'], 0, ',', '.'); ?></div>
+                <div>PPN <?php echo $pajakPersenLabel; ?>%: <?php echo number_format($ringkasanOrder['subtotal_ppn'], 0, ',', '.'); ?></div>
 
                 <h3 class="grand-total-line">
-                    Grand Total: <?php echo number_format($grand_total, 0, ',', '.'); ?>
+                    Grand Total: <?php echo number_format($ringkasanOrder['grand_total'], 0, ',', '.'); ?>
                 </h3>
 
             </div>
             <div class="text-center small-detail" style="margin-top: 10px;font-weight: bold;">
-                *Harga Sudah Termasuk Pajak
+                *PPN <?php echo $pajakPersenLabel; ?>% ditambahkan pada total akhir
             </div>
             <div class="text-center small-detail" style="margin-top: 10px;font-weight: bold;">
                 TERIMA KASIH ATAS KUNJUNGAN ANDA!
@@ -530,3 +521,6 @@ while ($record = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
             /* Adjust this value based on your content's natural width */
         }
     </style>
+
+
+

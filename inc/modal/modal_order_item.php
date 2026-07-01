@@ -375,21 +375,7 @@ if (empty($result)) {
                                                             Total Harga
                                                       </td>
                                                       <td class="fw-bold">
-                                                            <?php
-                                                            $total = 0;
-                                                            $total2 = 0;
-                                                            $total3 = 0;
-                                                            foreach ($result as $row) {
-                                                                  if (isset($row['jenis_menu']) && (int)$row['jenis_menu'] === 3) {
-                                                                        $total += $row['harganyanon'];
-                                                                  } else {
-                                                                        $total += $row['harganya'];
-                                                                        $total3 += $row['ppn_pajak'];
-                                                                  }
-                                                                  $total2 += $row['harganya_toko'];
-                                                            }
-                                                            echo number_format($total, 0, ',', '.');
-                                                            ?>
+                                                            <?php echo number_format($ringkasanOrder['subtotal_tarif'], 0, ',', '.'); ?>
                                                       </td>
 
                                                 </tr>
@@ -399,32 +385,16 @@ if (empty($result)) {
                                                             Grand Total
                                                       </td>
                                                       <td class="fw-bold">
-                                                            <?php
-                                                            // Ambil nilai diskon nominal dari input user jika ada, jika tidak pakai 0
-                                                            $diskon_nominal = isset($_POST['diskon_nominal']) ? floatval($_POST['diskon_nominal']) : 0;
-                                                            if ($diskon_nominal < 0)
-                                                                  $diskon_nominal = 0;
-                                                            if ($diskon_nominal > $total)
-                                                                  $diskon_nominal = $total;
-
-                                                            $grand_total = $total - $diskon_nominal;
-                                                            ?>
-
                                                             <div>Diskon:
-                                                                  -<?php echo number_format($diskon_nominal + $diskon, 0, ',', '.'); ?>
+                                                                  -<?php echo number_format($ringkasanOrder['diskon'], 0, ',', '.'); ?>
                                                             </div>
                                                             <div>Total Harga:
-                                                                  <?php echo number_format($grand_total - $diskon, 0, ',', '.'); ?>
+                                                                  <?php echo number_format($ringkasanOrder['subtotal_setelah_diskon'], 0, ',', '.'); ?>
                                                             </div>
-                                                            <?php
-                                                            $grand_total = $grand_total - $diskon;
-                                                            $ppn = $total3;
-                                                            // $grand_total += $ppn;
-                                                            ?>
-                                                            <div>PPN 11%: <?php echo number_format($ppn, 0, ',', '.'); ?>
+                                                            <div>PPN <?php echo $pajakPersenLabel; ?>%: <?php echo number_format($ringkasanOrder['subtotal_ppn'], 0, ',', '.'); ?>
                                                             </div>
                                                             <div class="fw-bold">Grand Total:
-                                                                  <?php echo number_format($grand_total, 0, ',', '.'); ?>
+                                                                  <?php echo number_format($ringkasanOrder['grand_total'], 0, ',', '.'); ?>
                                                             </div>
                                                       </td>
                                                 </tr>
@@ -440,11 +410,11 @@ if (empty($result)) {
                                     <input type="hidden" name="catatan" value="<?php echo $catatan ?>">
                                     <input type="hidden" name="jenis_Kendaraan" value="<?php echo $jenis_Kendaraan ?>">
                                     <input type="hidden" name="ukuran_Kendaraan" value="<?php echo $ukuran_Kendaraan ?>">
-                                    <input type="hidden" name="total_bayar" value="<?php echo $total ?>">
-                                    <input type="hidden" name="grand_total" value="<?php echo $grand_total ?>">
-                                    <input type="hidden" name="diskon" value="<?php echo $diskon_nominal ?>">
-                                    <input type="hidden" name="harga_toko" value="<?php echo $total2 ?>">
-                                    <input type="hidden" name="ppn" value="<?php echo $ppn ?>">
+                                    <input type="hidden" name="total_bayar" value="<?php echo $ringkasanOrder['subtotal_tarif'] ?>">
+                                    <input type="hidden" name="grand_total" value="<?php echo $ringkasanOrder['grand_total'] ?>">
+                                    <input type="hidden" name="diskon" value="<?php echo $ringkasanOrder['diskon'] ?>">
+                                    <input type="hidden" name="harga_toko" value="<?php echo $ringkasanOrder['nominal_karyawan'] ?>">
+                                    <input type="hidden" name="ppn" value="<?php echo $ringkasanOrder['subtotal_ppn'] ?>">
                                     <div class="row mt-3">
                                           <!-- <div class="col-lg-6">
                                                     <div class="form-floating mb-3">
@@ -455,8 +425,8 @@ if (empty($result)) {
                                           <div class="col-lg-12">
                                                 <div class="form-floating mb-3">
                                                       <input type="number" class="form-control" id="bayar"
-                                                            value="<?php echo $grand_total ?>"
-                                                            placeholder="<?php echo $grand_total ?>" name="bayar" required>
+                                                            value="<?php echo $ringkasanOrder['grand_total'] ?>"
+                                                            placeholder="<?php echo $ringkasanOrder['grand_total'] ?>" name="bayar" required>
                                                       <label for="bayar">Jumlah Bayar</label>
                                                       <div class="invalid-feedback">
                                                             Jumlah bayar tidak boleh kosong

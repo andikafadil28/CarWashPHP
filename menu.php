@@ -11,15 +11,17 @@ $query = mysqli_query($conn, "select tb_tarif.* from tb_tarif
 WHERE tb_tarif.status = 1
 $where_status
 ORDER BY tb_tarif.status DESC, tb_tarif.nama_tarif ASC");
-// $sel_kategori = mysqli_query($conn, "SELECT id_kategori,kategori_menu FROM tb_kategori_menu");
 $query2 = mysqli_query($conn, "select * from tb_tarif WHERE status = 1");
+$result2 = [];
+$result = [];
 while ($record2 = mysqli_fetch_array($query2)) {
+    $record2['billing'] = carwash_resolve_tarif_breakdown($record2);
     $result2[] = $record2;
 }
 while ($record = mysqli_fetch_array($query)) {
+    $record['billing'] = carwash_resolve_tarif_breakdown($record);
     $result[] = $record;
 }
-
 ?>
 
 <!-- Conten -->
@@ -107,23 +109,23 @@ while ($record = mysqli_fetch_array($query)) {
                                         <div class="col lg-4">
                                             <div class="form-floating mt-3">
                                                 <input type="number" class="form-control" id="floatingHarga"
-                                                    placeholder="Masukan Harga" name="harga_PT" required>
-                                                <label for="floatingHarga">Harga PT</label>
+                                                    placeholder="Masukan Harga" name="harga_Tarif" required>
+                                                <label for="floatingHarga">Harga Tarif</label>
                                                 <div class="invalid-feedback">
                                                     Harga tidak boleh kosong
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col lg-4">
+                                        <!-- <div class="col lg-4">
                                             <div class="form-floating mt-3">
                                                 <input type="number" class="form-control" id="floatingStok"
-                                                    placeholder="Masukan Stok" name="harga_Karyawan" required>
+                                                    placeholder="Masukan Stok" name="harga_Karyawan_preview" required>
                                                 <label for="floatingStok">Harga Karyawan</label>
                                                 <div class="invalid-feedback">
                                                     Harga tidak boleh kosong
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> -->
                                     </div>
                                     <div class="row mt-3">
                                         <div class="col lv-6">
@@ -266,8 +268,8 @@ while ($record = mysqli_fetch_array($query)) {
                                                 <div class="col lg-6">
                                                     <div class="form-floating mt-3">
                                                         <input type="number" class="form-control" id="floatingHarga"
-                                                            placeholder="Masukan Harga" name="harga_PT"
-                                                            value="<?php echo $row['bill_PT'] ?>" required>
+                                                            placeholder="Masukan Harga" name="harga_Tarif"
+                                                            value="<?php echo $row['billing']['bill_tarif'] ?>" required>
                                                         <label for="floatingHarga">Harga</label>
                                                         <div class="invalid-feedback">
                                                             Harga tidak boleh kosong
@@ -277,9 +279,9 @@ while ($record = mysqli_fetch_array($query)) {
                                                 <div class="col lg-6">
                                                     <div class="form-floating mt-3">
                                                         <input type="number" class="form-control" id="floatingStok"
-                                                            placeholder="Masukan Stok" name="harga_Karyawan"
-                                                            value="<?php echo $row['bill_Karyawan'] ?>" required>
-                                                        <label for="floatingStok">Margin</label>
+                                                            placeholder="Masukan Stok" name="harga_Karyawan_preview"
+                                                            value="<?php echo $row['billing']['bill_karyawan'] ?>" readonly>
+                                                        <label for="floatingStok">Bill Karyawan</label>
                                                         <div class="invalid-feedback">
                                                             Marjin tidak boleh kosong
                                                         </div>
@@ -434,8 +436,8 @@ while ($record = mysqli_fetch_array($query)) {
                                                 <div class="col lg-6">
                                                     <div class="form-floating mt-3">
                                                         <input type="number" class="form-control" id="floatingHarga"
-                                                            placeholder="Masukan Harga" name="harga_PT"
-                                                            value="<?php echo $row['bill_PT'] ?>" disabled>
+                                                            placeholder="Masukan Harga" name="harga_Tarif"
+                                                            value="<?php echo $row['billing']['bill_tarif'] ?>" disabled>
                                                         <label for="floatingHarga">Harga</label>
                                                         <div class="invalid-feedback">
                                                             Harga tidak boleh kosong
@@ -445,9 +447,9 @@ while ($record = mysqli_fetch_array($query)) {
                                                 <div class="col lg-6">
                                                     <div class="form-floating mt-3">
                                                         <input type="number" class="form-control" id="floatingStok"
-                                                            placeholder="Masukan Stok" name="harga_Karyawan"
-                                                            value="<?php echo $row['bill_Karyawan'] ?>" disabled>
-                                                        <label for="floatingStok">Margin</label>
+                                                            placeholder="Masukan Stok" name="harga_Karyawan_preview"
+                                                            value="<?php echo $row['billing']['bill_karyawan'] ?>" disabled>
+                                                        <label for="floatingStok">Bill Karyawan</label>
                                                         <div class="invalid-feedback">
                                                             Marjin tidak boleh kosong
                                                         </div>
@@ -485,9 +487,10 @@ while ($record = mysqli_fetch_array($query)) {
                                     <th scope="col">Keterangan</th>
                                     <th scope="col">Ukuran Kendaraan</th>
                                     <th scope="col">Jenis Kendaraan</th>
-                                    <th scope="col">Harga PT</th>
-                                    <th scope="col">Harga Karyawan</th>
-                                    <th scope="col">Total</th>
+                                    <th scope="col">Harga Tarif</th>
+                                    <th scope="col">Bill PT</th>
+                                    <th scope="col">Bill Karyawan</th>
+                                    <th scope="col">Bill Operasional</th>
                                     <th scope="col">Status</th>
                                     <?php
                                     if ($_SESSION["level_kantin"] == 1) {
@@ -510,9 +513,10 @@ while ($record = mysqli_fetch_array($query)) {
                                         <td><?php echo $row['keterangan_tarif'] ?></td>
                                         <td><?php echo $row['ukuran_Kendaraan'] ?></td>
                                         <td><?php echo $row['jenis_Kendaraan'] ?></td>
-                                        <td><?php echo $row['bill_PT'] ?></td>
-                                        <td><?php echo $row['bill_Karyawan'] ?></td>
-                                        <td><?php echo $row['bill_PT'] + $row['bill_Karyawan'] ?></td>
+                                        <td><?php echo number_format($row['billing']['bill_tarif'], 0, ',', '.') ?></td>
+                                        <td><?php echo number_format($row['billing']['bill_pt'], 0, ',', '.') ?></td>
+                                        <td><?php echo number_format($row['billing']['bill_karyawan'], 0, ',', '.') ?></td>
+                                        <td><?php echo number_format($row['billing']['bill_operasional'], 0, ',', '.') ?></td>
                                         <td>
                                             <?php if ((int) ($row['status'] ?? 0) === 1) { ?>
                                                 <span class="badge bg-success">Aktif</span>
@@ -632,3 +636,8 @@ while ($record = mysqli_fetch_array($query)) {
         /* Adjust this value based on your content's natural width */
     }
 </style>
+
+
+
+
+

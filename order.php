@@ -2,6 +2,7 @@
 
 include "Database/connect.php";
 date_default_timezone_set("Asia/Jakarta");
+$pajakPersen = (float) (carwash_get_config()['pajak_persen'] ?? 0);
 $where_clause = "";
 $jenis_filter = "";
 // $sel_kategori = mysqli_query($conn, "SELECT id_kategor i,kategori_menu FROM tb_kategori_menu");
@@ -60,7 +61,8 @@ while ($record2 = mysqli_fetch_array($query2)) {
                 if (isset($_POST['filter']) && isset($_POST['jenis_filter']) && $_POST['jenis_filter'] === 'all') {
                     // Filter untuk SEMUA kios
                     $query_string = "SELECT *,tb_order.jenis_Kendaraan as jenis_K,tb_order.ukuran_Kendaraan as ukuran_K,
-                                             COALESCE(SUM((tb_tarif.bill_PT + tb_tarif.bill_Karyawan) * tb_list_order.jumlah), 0) as harganya from tb_order
+                                             COALESCE(SUM((CASE WHEN COALESCE(tb_tarif.bill_Tarif, 0) > 0 THEN tb_tarif.bill_Tarif ELSE (COALESCE(tb_tarif.bill_PT, 0) + COALESCE(tb_tarif.bill_Karyawan, 0) + COALESCE(tb_tarif.bill_Operasional, 0)) END) * tb_list_order.jumlah), 0) as harganya,
+                                             COALESCE(SUM((CASE WHEN COALESCE(tb_tarif.bill_Tarif, 0) > 0 THEN tb_tarif.bill_Tarif ELSE (COALESCE(tb_tarif.bill_PT, 0) + COALESCE(tb_tarif.bill_Karyawan, 0) + COALESCE(tb_tarif.bill_Operasional, 0)) END) * ($pajakPersen / 100) * tb_list_order.jumlah), 0) as nilai_ppn from tb_order
                                              LEFT JOIN user ON user.id = tb_order.kasir
                                              LEFT JOIN tb_list_order ON tb_list_order.kode_order = tb_order.id_order
                                              LEFT JOIN tb_tarif ON tb_tarif.id = tb_list_order.tarif
@@ -71,7 +73,8 @@ while ($record2 = mysqli_fetch_array($query2)) {
                     // Filter untuk kios spesifik
                     $jenis_filter = mysqli_real_escape_string($conn, $_POST['jenis_filter']);
                     $query_string = "SELECT *,tb_order.jenis_Kendaraan as jenis_K,tb_order.ukuran_Kendaraan as ukuran_K,
-                                             COALESCE(SUM((tb_tarif.bill_PT + tb_tarif.bill_Karyawan) * tb_list_order.jumlah), 0) as harganya from tb_order
+                                             COALESCE(SUM((CASE WHEN COALESCE(tb_tarif.bill_Tarif, 0) > 0 THEN tb_tarif.bill_Tarif ELSE (COALESCE(tb_tarif.bill_PT, 0) + COALESCE(tb_tarif.bill_Karyawan, 0) + COALESCE(tb_tarif.bill_Operasional, 0)) END) * tb_list_order.jumlah), 0) as harganya,
+                                             COALESCE(SUM((CASE WHEN COALESCE(tb_tarif.bill_Tarif, 0) > 0 THEN tb_tarif.bill_Tarif ELSE (COALESCE(tb_tarif.bill_PT, 0) + COALESCE(tb_tarif.bill_Karyawan, 0) + COALESCE(tb_tarif.bill_Operasional, 0)) END) * ($pajakPersen / 100) * tb_list_order.jumlah), 0) as nilai_ppn from tb_order
                                              LEFT JOIN user ON user.id = tb_order.kasir
                                              LEFT JOIN tb_list_order ON tb_list_order.kode_order = tb_order.id_order
                                              LEFT JOIN tb_tarif ON tb_tarif.id = tb_list_order.tarif
@@ -82,7 +85,8 @@ while ($record2 = mysqli_fetch_array($query2)) {
                 } else {
                     // Query default (tampilkan semua data tanpa filter)
                     $query_string = "SELECT *,tb_order.jenis_Kendaraan as jenis_K,tb_order.ukuran_Kendaraan as ukuran_K,
-                                             COALESCE(SUM((tb_tarif.bill_PT + tb_tarif.bill_Karyawan) * tb_list_order.jumlah), 0) as harganya from tb_order
+                                             COALESCE(SUM((CASE WHEN COALESCE(tb_tarif.bill_Tarif, 0) > 0 THEN tb_tarif.bill_Tarif ELSE (COALESCE(tb_tarif.bill_PT, 0) + COALESCE(tb_tarif.bill_Karyawan, 0) + COALESCE(tb_tarif.bill_Operasional, 0)) END) * tb_list_order.jumlah), 0) as harganya,
+                                             COALESCE(SUM((CASE WHEN COALESCE(tb_tarif.bill_Tarif, 0) > 0 THEN tb_tarif.bill_Tarif ELSE (COALESCE(tb_tarif.bill_PT, 0) + COALESCE(tb_tarif.bill_Karyawan, 0) + COALESCE(tb_tarif.bill_Operasional, 0)) END) * ($pajakPersen / 100) * tb_list_order.jumlah), 0) as nilai_ppn from tb_order
                                              LEFT JOIN user ON user.id = tb_order.kasir
                                              LEFT JOIN tb_list_order ON tb_list_order.kode_order = tb_order.id_order
                                              LEFT JOIN tb_tarif ON tb_tarif.id = tb_list_order.tarif
@@ -141,7 +145,8 @@ while ($record2 = mysqli_fetch_array($query2)) {
                                 <?php
                                 $id_nomor = 1;
                                 foreach ($result as $row) {
-                                    $total_bayar_akhir = $row['harganya'] - $row['diskon'];
+                                    $estimasi_total = ($row['harganya'] ?? 0) - ($row['diskon'] ?? 0) + ($row['nilai_ppn'] ?? 0);
+                                    $total_bayar_akhir = !empty($row['jumlah_bayar']) ? $row['jumlah_bayar'] : $estimasi_total;
                                     $is_paid = !empty($row['id_bayar']);
                                     ?>
                                     <tr>
@@ -268,3 +273,4 @@ while ($record2 = mysqli_fetch_array($query2)) {
         margin-right: 5px;
     }
 </style>
+
