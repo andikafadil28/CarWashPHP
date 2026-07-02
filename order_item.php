@@ -116,7 +116,7 @@ $pajakPersenLabel = carwash_get_config()['pajak_persen'] ?? 0;
                     <div class="form-floating ">
                         <input disabled type="text" class="form-control" id="pelanggan"
                             value="<?php echo $customer ?>" name="pelanggan">
-                        <label for="floatingInputGambar">Pelanggan</label>
+                        <label for="floatingInputGambar">Type Kendaraan</label>
                     </div>
                 </div>
             </div>
@@ -521,6 +521,3 @@ $pajakPersenLabel = carwash_get_config()['pajak_persen'] ?? 0;
             /* Adjust this value based on your content's natural width */
         }
     </style>
-
-
-

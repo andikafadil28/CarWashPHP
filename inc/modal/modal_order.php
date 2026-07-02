@@ -30,7 +30,7 @@
                         <div class="col-lg-6">
                             <div class="form-floating">
                                 <input type="text" class="form-control" id="floatingpelanggan" placeholder="nama pelanggan" name="pelanggan" required>
-                                <label for="floatingpelanggan">Pelanggan</label>
+                                <label for="floatingpelanggan">Type Kendaraan</label>
                                 <div class="invalid-feedback">
                                     Nama Pelanggan tidak boleh kosong
                                 </div>
